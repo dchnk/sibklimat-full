@@ -1,0 +1,39 @@
+# macOS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+
+# Env files
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Root build/cache
+.cache/
+dist/
+
+# Nuxt
+sibklimatrus/node_modules/
+sibklimatrus/.nuxt/
+sibklimatrus/.output/
+sibklimatrus/.data/
+sibklimatrus/.vercel/
+
+# Strapi
+sibklimat-strapi/node_modules/
+sibklimat-strapi/.cache/
+sibklimat-strapi/build/
+sibklimat-strapi/.tmp/
+sibklimat-strapi/public/uploads/
+
+# Coverage
+coverage/

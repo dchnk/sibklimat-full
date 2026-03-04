@@ -1,0 +1,44 @@
+services:
+  strapi:
+    build:
+      context: ./sibklimat-strapi
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "1337:1337"
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: 1337
+      PUBLIC_URL: ${STRAPI_PUBLIC_URL:-http://localhost:1337}
+      DATABASE_CLIENT: sqlite
+      DATABASE_FILENAME: .tmp/data.db
+      APP_KEYS: ${STRAPI_APP_KEYS}
+      API_TOKEN_SALT: ${STRAPI_API_TOKEN_SALT}
+      ADMIN_JWT_SECRET: ${STRAPI_ADMIN_JWT_SECRET}
+      TRANSFER_TOKEN_SALT: ${STRAPI_TRANSFER_TOKEN_SALT}
+      JWT_SECRET: ${STRAPI_JWT_SECRET}
+      ENCRYPTION_KEY: ${STRAPI_ENCRYPTION_KEY}
+    volumes:
+      - strapi_data:/app/.tmp
+      - strapi_uploads:/app/public/uploads
+
+  frontend:
+    build:
+      context: ./sibklimatrus
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - strapi
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      NITRO_HOST: 0.0.0.0
+      NITRO_PORT: 3000
+      NUXT_PUBLIC_SITE_URL: ${NUXT_PUBLIC_SITE_URL:-http://localhost:3000}
+      NUXT_PUBLIC_STRAPI_URL: ${NUXT_PUBLIC_STRAPI_URL:-http://strapi:1337}
+
+volumes:
+  strapi_data:
+  strapi_uploads:

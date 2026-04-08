@@ -1,9 +1,54 @@
 {
   "collectionName": "components_layout_headers",
   "info": {
-    "displayName": "header"
+    "displayName": "Header",
+    "description": "Landing page header content"
   },
   "options": {},
-  "attributes": {},
+  "attributes": {
+    "brand": {
+      "type": "string",
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "tagline": {
+      "type": "string",
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "navigation": {
+      "type": "component",
+      "repeatable": true,
+      "component": "layout.navigation-item",
+      "min": 1,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "ctaLabel": {
+      "type": "string",
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "ctaHref": {
+      "type": "string",
+      "required": true,
+      "default": "#contact"
+    }
+  },
   "config": {}
 }

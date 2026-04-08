@@ -8,7 +8,6 @@ export default defineNuxtConfig({
     strategy: 'no_prefix',
     defaultLocale: 'ru',
     detectBrowserLanguage: false,
-    lazy: true,
     langDir: 'locales',
     locales: [
       { code: 'ru', name: 'Russian', file: 'ru.ts' },
@@ -18,8 +17,8 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     public: {
-      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000',
-      strapiUrl: process.env.NUXT_PUBLIC_STRAPI_URL || 'http://localhost:1337'
+      siteUrl: import.meta.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000',
+      strapiUrl: import.meta.env.NUXT_PUBLIC_STRAPI_URL || 'http://localhost:1337'
     }
   },
   shadcn: {
@@ -28,12 +27,11 @@ export default defineNuxtConfig({
   },
   app: {
     head: {
-      title: 'СибКлимат | Кондиционеры и вентиляция в Новосибирске',
+      title: 'SibKlimat | Air Conditioning and Ventilation',
       meta: [
         {
           name: 'description',
-          content:
-            'Продажа, монтаж и обслуживание кондиционеров, а также проектирование и установка вентиляции в Новосибирске и области.'
+          content: 'Design, installation and maintenance of air conditioning and ventilation systems in Novosibirsk.'
         }
       ]
     }

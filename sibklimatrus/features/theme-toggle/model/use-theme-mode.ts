@@ -9,7 +9,7 @@ const isThemeMode = (value: unknown): value is ThemeMode =>
   value === 'light' || value === 'dark'
 
 const getPreferredThemeMode = (): ThemeMode => {
-  if (!process.client) {
+  if (!import.meta.client) {
     return 'light'
   }
 
@@ -24,7 +24,7 @@ const getPreferredThemeMode = (): ThemeMode => {
 }
 
 const applyThemeClass = (mode: ThemeMode) => {
-  if (!process.client) {
+  if (!import.meta.client) {
     return
   }
 
@@ -39,7 +39,7 @@ export const useThemeMode = () => {
     mode.value = nextMode
     applyThemeClass(nextMode)
 
-    if (process.client) {
+    if (import.meta.client) {
       window.localStorage.setItem(STORAGE_KEY, nextMode)
     }
   }

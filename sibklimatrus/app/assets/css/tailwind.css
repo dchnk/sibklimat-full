@@ -134,6 +134,7 @@
 
   .landing-header-shell {
     @apply fixed inset-x-0 top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-xl supports-backdrop-filter:bg-background/65;
+    padding-right: var(--scrollbar-width, 0px);
   }
 
   .landing-anchor-offset {
@@ -142,5 +143,29 @@
 
   .landing-placeholder-section {
     @apply scroll-mt-28 rounded-xl border border-dashed border-border/80 bg-card/70 p-6 text-sm text-muted-foreground backdrop-blur-sm md:p-8;
+  }
+
+  .landing-section {
+    @apply scroll-mt-28 py-12 md:py-16;
+  }
+
+  .landing-section-head {
+    @apply mb-7 space-y-3 md:mb-8;
+  }
+
+  .landing-section-title {
+    @apply text-3xl font-semibold leading-tight md:text-5xl;
+  }
+
+  .landing-section-subtitle {
+    @apply max-w-3xl text-base text-muted-foreground md:text-lg;
+  }
+
+  .landing-media-placeholder {
+    @apply relative overflow-hidden rounded-xl border border-dashed border-border/80 bg-gradient-to-br from-cyan-500/10 via-background to-blue-500/10;
+  }
+
+  .landing-media-placeholder-inner {
+    @apply absolute inset-3 rounded-lg border border-border/70 bg-background/70 p-3 backdrop-blur-sm;
   }
 }

@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import { useLandingHeader } from '@/entities/landing/header'
+import { LandingContact } from '@/widgets/landing/contact'
+import { LandingFaq } from '@/widgets/landing/faq'
+import { LandingFooter } from '@/widgets/landing/footer'
 import { LandingHeader } from '@/widgets/landing/header'
-import { useI18n } from '#imports'
-
-const { t } = useI18n()
+import { LandingHero } from '@/widgets/landing/hero'
+import { LandingProcess } from '@/widgets/landing/process'
+import { LandingServices } from '@/widgets/landing/services'
+import { LandingSolutions } from '@/widgets/landing/solutions'
 const { content: headerContent } = useLandingHeader()
 </script>
 
@@ -15,15 +19,13 @@ const { content: headerContent } = useLandingHeader()
     <LandingHeader :content="headerContent" />
 
     <main class="landing-layout-container landing-main">
-      <section
-        id="services"
-        class="landing-placeholder-section"
-      >
-        {{ t('landing.scaffold.placeholder') }}
-      </section>
-      <section id="solutions" class="landing-anchor-offset" />
-      <section id="process" class="landing-anchor-offset" />
-      <section id="contact" class="landing-anchor-offset" />
+      <LandingHero />
+      <LandingServices />
+      <LandingSolutions />
+      <LandingProcess />
+      <LandingFaq />
+      <LandingContact />
+      <LandingFooter />
     </main>
   </div>
 </template>

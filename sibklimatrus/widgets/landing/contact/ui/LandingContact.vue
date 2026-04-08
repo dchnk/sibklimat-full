@@ -66,7 +66,7 @@ const contactIcons = {
     </div>
 
     <div class="grid gap-4 lg:grid-cols-[0.92fr_1.08fr]">
-      <Card class="gap-4 border-border/70 bg-card/70 backdrop-blur-sm">
+      <Card class="gap-4 border-border/75 bg-card/92 backdrop-blur-sm">
         <CardHeader class="space-y-3">
           <CardTitle class="text-xl">
             {{ t('landing.contact.directTitle') }}
@@ -83,7 +83,7 @@ const contactIcons = {
             :href="contactLinks[channel]"
             target="_blank"
             rel="noopener noreferrer"
-            class="flex items-center gap-3 rounded-xl border border-border/70 bg-background/65 p-3 transition-colors hover:bg-accent/60"
+            class="flex items-center gap-3 rounded-xl border border-border/75 bg-background/90 p-3 transition-colors hover:bg-accent/70"
           >
             <component
               :is="contactIcons[channel]"
@@ -112,7 +112,7 @@ const contactIcons = {
         </CardContent>
       </Card>
 
-      <Card class="gap-4 border-border/70 bg-card/70 backdrop-blur-sm">
+      <Card class="gap-4 border-border/75 bg-card/92 backdrop-blur-sm">
         <CardHeader>
           <CardTitle class="text-xl">
             {{ t('landing.contact.form.title') }}
@@ -181,7 +181,7 @@ const contactIcons = {
             />
           </div>
 
-          <Label class="gap-3 rounded-lg border border-border/70 bg-background/65 p-3 text-sm text-muted-foreground">
+          <Label class="gap-3 rounded-lg border border-border/75 bg-background/90 p-3 text-sm text-muted-foreground">
             <Checkbox
               :checked="agree"
               @update:checked="(value: boolean | 'indeterminate') => { agree = value === true }"

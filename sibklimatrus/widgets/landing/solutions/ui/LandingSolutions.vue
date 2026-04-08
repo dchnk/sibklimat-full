@@ -43,7 +43,7 @@ const { t } = useI18n()
       default-value="apartments"
       class="gap-5"
     >
-      <TabsList class="h-auto w-full justify-start overflow-x-auto rounded-xl bg-card/70 p-1.5">
+      <TabsList class="h-auto w-full justify-start overflow-x-auto rounded-xl bg-card/86 p-1.5">
         <TabsTrigger
           v-for="tab in solutionTabs"
           :key="tab.value"
@@ -63,7 +63,7 @@ const { t } = useI18n()
           <Card
             v-for="cardKey in tab.cardKeys"
             :key="cardKey"
-            class="gap-4 border-border/70 bg-card/70 backdrop-blur-sm"
+            class="gap-4 border-border/75 bg-card/92 backdrop-blur-sm"
           >
             <CardHeader>
               <CardTitle class="text-lg">

@@ -14,9 +14,12 @@ const toggleLabel = computed(() =>
     : t('theme.toggleToDark')
 )
 
-const handleChange = (checked: boolean) => {
-  setMode(checked ? 'dark' : 'light')
-}
+const themeSwitchModel = computed({
+  get: () => isDark.value,
+  set: (checked: boolean) => {
+    setMode(checked ? 'dark' : 'light')
+  }
+})
 </script>
 
 <template>
@@ -27,10 +30,9 @@ const handleChange = (checked: boolean) => {
     >
       <Sun class="size-3.5 text-amber-500/90" />
       <Switch
-        :checked="isDark"
+        v-model="themeSwitchModel"
         :aria-label="toggleLabel"
         :title="toggleLabel"
-        @update:checked="handleChange"
       />
       <Moon class="size-3.5 text-cyan-500/90" />
 

@@ -39,7 +39,7 @@ const metricKeys = ['speed', 'accuracy', 'support'] as const
       <Card
         v-for="(step, index) in processStepKeys"
         :key="step"
-        class="gap-4 border-border/70 bg-card/70 backdrop-blur-sm"
+        class="gap-4 border-border/75 bg-card/92 backdrop-blur-sm"
       >
         <CardHeader class="gap-2">
           <Badge
@@ -61,7 +61,7 @@ const metricKeys = ['speed', 'accuracy', 'support'] as const
       </Card>
     </div>
 
-    <Card class="mt-5 gap-3 border-border/70 bg-card/70">
+    <Card class="mt-5 gap-3 border-border/75 bg-card/90">
       <CardContent class="grid gap-4 p-6 md:grid-cols-3 md:items-center">
         <div
           v-for="(metricKey, index) in metricKeys"

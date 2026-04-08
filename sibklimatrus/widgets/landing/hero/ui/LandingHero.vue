@@ -84,7 +84,7 @@ const quickDialogKeys = ['audit', 'equipment', 'budget'] as const
                 <div
                   v-for="item in quickDialogKeys"
                   :key="item"
-                  class="flex items-start gap-2 rounded-lg border border-border/70 bg-card/60 p-3"
+                  class="flex items-start gap-2 rounded-lg border border-border/75 bg-card/88 p-3"
                 >
                   <CircleCheckBig class="mt-0.5 size-4 text-primary" />
                   <p class="text-sm text-muted-foreground">
@@ -100,7 +100,7 @@ const quickDialogKeys = ['audit', 'equipment', 'budget'] as const
           <Card
             v-for="kpi in kpiKeys"
             :key="kpi"
-            class="gap-2 border-border/70 bg-card/70 p-4"
+            class="gap-2 border-border/75 bg-card/92 p-4"
           >
             <p class="text-2xl font-semibold">
               {{ t(`landing.hero.kpis.${kpi}.value`) }}
@@ -112,7 +112,7 @@ const quickDialogKeys = ['audit', 'equipment', 'budget'] as const
         </div>
       </div>
 
-      <Card class="gap-4 overflow-hidden border-border/70 bg-card/70 backdrop-blur-sm">
+      <Card class="gap-4 overflow-hidden border-border/75 bg-card/92 backdrop-blur-sm">
         <CardHeader class="gap-3">
           <div class="flex items-center justify-between gap-3">
             <CardTitle class="text-lg md:text-xl">

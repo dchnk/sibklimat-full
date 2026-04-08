@@ -30,7 +30,7 @@ const { t } = useI18n()
       </p>
     </div>
 
-    <Card class="gap-0 border-border/70 bg-card/70 px-5 backdrop-blur-sm md:px-8">
+    <Card class="gap-0 border-border/75 bg-card/92 px-5 backdrop-blur-sm md:px-8">
       <Accordion
         type="single"
         collapsible

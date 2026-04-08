@@ -55,7 +55,7 @@ const serviceIcons: Record<(typeof serviceKeys)[number], Component> = {
       <Card
         v-for="serviceKey in serviceKeys"
         :key="serviceKey"
-        class="gap-4 border-border/70 bg-card/70 backdrop-blur-sm"
+        class="gap-4 border-border/75 bg-card/92 backdrop-blur-sm"
       >
         <CardHeader class="gap-3">
           <div class="flex items-center justify-between gap-3">

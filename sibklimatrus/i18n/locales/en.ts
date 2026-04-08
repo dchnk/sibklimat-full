@@ -14,7 +14,8 @@ export default {
         process: 'How We Work',
         contact: 'Contacts'
       },
-      cta: 'Request a Quote'
+      cta: 'Request a Quote',
+      menuOpen: 'Open menu'
     },
     hero: {
       badge: 'Climate Engineering',

@@ -117,6 +117,36 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  a[href],
+  [data-slot='label'],
+  [data-slot='button'],
+  [data-slot='switch'],
+  [data-slot='tabs-trigger'],
+  [data-slot='accordion-trigger'],
+  [data-slot='select-trigger'],
+  [data-slot='select-item'],
+  [data-slot='select-scroll-up-button'],
+  [data-slot='select-scroll-down-button'],
+  [data-slot='checkbox'],
+  [data-slot='dialog-trigger'],
+  [data-slot='dialog-close'],
+  [data-slot='sheet-trigger'],
+  [data-slot='sheet-close'],
+  [data-slot='navigation-menu-trigger'],
+  [data-slot='navigation-menu-link'] {
+    @apply cursor-pointer;
+  }
+
+  [data-slot='button']:disabled,
+  [data-slot='switch'][data-disabled],
+  [data-slot='tabs-trigger']:disabled,
+  [data-slot='accordion-trigger']:disabled,
+  [data-slot='select-trigger'][data-disabled],
+  [data-slot='select-item'][data-disabled],
+  [data-slot='checkbox'][data-disabled] {
+    @apply cursor-not-allowed;
+  }
 }
 
 @layer components {

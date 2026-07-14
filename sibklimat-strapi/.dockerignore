@@ -1,0 +1,11 @@
+.cache
+.env
+.npm-cache
+.strapi
+.tmp
+build
+dist
+exports
+node_modules
+npm-debug.log
+public/uploads

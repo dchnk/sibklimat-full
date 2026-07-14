@@ -46,6 +46,7 @@ const extractHeaderFromResponse = (
 export const useLandingHeader = () => {
   const config = useRuntimeConfig()
   const { locale } = useI18n()
+  const strapiUrl = import.meta.server ? config.strapiUrl : config.public.strapiUrl
 
   const { data, pending, refresh } = useAsyncData<LandingHeaderContent>(
     'landing:header',
@@ -53,7 +54,7 @@ export const useLandingHeader = () => {
       try {
         const response = await $fetch<
           StrapiSingleTypeV5<StrapiHomepagePayload> | StrapiSingleTypeV4<StrapiHomepagePayload>
-        >(`${config.public.strapiUrl}/api/homepage`, {
+        >(`${strapiUrl}/api/homepage`, {
           query: {
             locale: locale.value,
             'populate[header][populate][navigation]': '*'

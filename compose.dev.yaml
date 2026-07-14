@@ -1,9 +1,9 @@
 services:
   strapi:
-    image: node:22-bookworm
+    image: node:24-bookworm
     working_dir: /app
     command: >
-      sh -lc "npm install && npm run develop"
+      sh -lc "npm ci && npm run develop"
     ports:
       - "1337:1337"
     environment:
@@ -29,10 +29,10 @@ services:
       - strapi_dev_uploads:/app/public/uploads
 
   frontend:
-    image: node:22-bookworm
+    image: node:24-bookworm
     working_dir: /app
     command: >
-      sh -lc "npm install && npm run dev -- --host 0.0.0.0 --port 3000"
+      sh -lc "npm ci && npm run dev -- --host 0.0.0.0 --port 3000"
     ports:
       - "3000:3000"
     environment:
@@ -42,6 +42,7 @@ services:
       NITRO_HOST: "0.0.0.0"
       NITRO_PORT: "3000"
       NUXT_PUBLIC_SITE_URL: ${NUXT_PUBLIC_SITE_URL:-http://localhost:3000}
+      NUXT_STRAPI_URL: ${NUXT_STRAPI_URL:-http://strapi:1337}
       NUXT_PUBLIC_STRAPI_URL: ${NUXT_PUBLIC_STRAPI_URL:-http://localhost:1337}
     volumes:
       - ./sibklimatrus:/app

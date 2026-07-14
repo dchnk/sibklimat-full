@@ -1,0 +1,28 @@
+{
+  "name": "sibklimat-full",
+  "private": true,
+  "packageManager": "npm@11.6.2",
+  "engines": {
+    "node": ">=22.18.0 <=24.x.x",
+    "npm": ">=10.0.0"
+  },
+  "scripts": {
+    "setup": "npm --prefix sibklimat-strapi ci && npm --prefix sibklimatrus ci",
+    "dev": "docker compose -f compose.dev.yaml up",
+    "dev:detached": "docker compose -f compose.dev.yaml up -d",
+    "dev:logs": "docker compose -f compose.dev.yaml logs -f",
+    "dev:down": "docker compose -f compose.dev.yaml down",
+    "dev:clean": "docker compose -f compose.dev.yaml down -v",
+    "build": "docker compose build",
+    "build:source": "npm run build:strapi && npm run build:frontend",
+    "build:strapi": "npm --prefix sibklimat-strapi run build",
+    "build:frontend": "npm --prefix sibklimatrus run build",
+    "preview": "docker compose up -d --build",
+    "preview:logs": "docker compose logs -f",
+    "preview:down": "docker compose down",
+    "deploy": "docker compose up -d --build",
+    "deploy:build": "docker compose build",
+    "deploy:logs": "docker compose logs -f",
+    "deploy:down": "docker compose down"
+  }
+}

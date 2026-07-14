@@ -60,7 +60,7 @@ const closeMobileMenu = () => {
 
         <nav
           aria-label="Desktop navigation"
-          class="hidden items-center gap-1 md:flex"
+          class="hidden items-center gap-1 min-[1100px]:flex"
         >
           <a
             v-for="item in headerContent.navigation"
@@ -81,7 +81,7 @@ const closeMobileMenu = () => {
                 type="button"
                 variant="outline"
                 size="icon-sm"
-                class="md:hidden"
+                class="min-[1100px]:hidden"
                 :aria-label="t('landing.header.menuOpen')"
                 :title="t('landing.header.menuOpen')"
               >
@@ -144,7 +144,7 @@ const closeMobileMenu = () => {
           <Button
             as-child
             size="sm"
-            class="hidden md:inline-flex"
+            class="hidden min-[1100px]:inline-flex"
           >
             <a :href="headerContent.cta.href">
               {{ headerContent.cta.label }}

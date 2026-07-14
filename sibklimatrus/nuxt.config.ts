@@ -16,9 +16,10 @@ export default defineNuxtConfig({
     vueI18n: './i18n.config.ts'
   },
   runtimeConfig: {
+    strapiUrl: process.env.NUXT_STRAPI_URL || 'http://localhost:1337',
     public: {
-      siteUrl: import.meta.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000',
-      strapiUrl: import.meta.env.NUXT_PUBLIC_STRAPI_URL || 'http://localhost:1337'
+      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000',
+      strapiUrl: process.env.NUXT_PUBLIC_STRAPI_URL || 'http://localhost:1337'
     }
   },
   shadcn: {

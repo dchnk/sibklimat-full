@@ -4,6 +4,11 @@ export default {
     toggleToLight: 'Switch to light theme'
   },
   landing: {
+    seo: {
+      metaTitle: 'SibKlimat — Air Conditioning and Ventilation in Novosibirsk',
+      metaDescription:
+        'Design, installation and maintenance of air conditioning and ventilation systems for homes, businesses and industrial facilities in Novosibirsk.'
+    },
     mediaPlaceholder: 'Media placeholder for photo or render',
     header: {
       brand: 'SibKlimat',

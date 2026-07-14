@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { LandingFaqContent } from '@/entities/landing/page'
 import {
   Accordion,
   AccordionContent,
@@ -7,10 +8,10 @@ import {
 } from '@/components/ui/accordion'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
-import { faqKeys } from '@/entities/landing/page'
-import { useI18n } from '#imports'
 
-const { t } = useI18n()
+defineProps<{
+  content: LandingFaqContent
+}>()
 </script>
 
 <template>
@@ -20,13 +21,13 @@ const { t } = useI18n()
         variant="secondary"
         class="rounded-full px-4 py-1.5 text-xs uppercase tracking-[0.14em]"
       >
-        {{ t('landing.faq.badge') }}
+        {{ content.badge }}
       </Badge>
       <h2 class="landing-section-title">
-        {{ t('landing.faq.title') }}
+        {{ content.title }}
       </h2>
       <p class="landing-section-subtitle">
-        {{ t('landing.faq.subtitle') }}
+        {{ content.subtitle }}
       </p>
     </div>
 
@@ -36,15 +37,15 @@ const { t } = useI18n()
         collapsible
       >
         <AccordionItem
-          v-for="faqKey in faqKeys"
-          :key="faqKey"
-          :value="faqKey"
+          v-for="item in content.items"
+          :key="item.id"
+          :value="item.id"
         >
           <AccordionTrigger class="text-base md:text-lg">
-            {{ t(`landing.faq.items.${faqKey}.question`) }}
+            {{ item.question }}
           </AccordionTrigger>
           <AccordionContent class="text-sm text-muted-foreground md:text-base">
-            {{ t(`landing.faq.items.${faqKey}.answer`) }}
+            {{ item.answer }}
           </AccordionContent>
         </AccordionItem>
       </Accordion>

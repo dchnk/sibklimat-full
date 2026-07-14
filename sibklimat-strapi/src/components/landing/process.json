@@ -1,32 +1,12 @@
 {
-  "collectionName": "components_layout_headers",
+  "collectionName": "components_landing_processes",
   "info": {
-    "displayName": "Header",
-    "description": "Landing page header content"
+    "displayName": "Process",
+    "description": "Project process section and metrics"
   },
   "options": {},
   "attributes": {
-    "logo": {
-      "type": "media",
-      "multiple": false,
-      "allowedTypes": [
-        "images"
-      ],
-      "pluginOptions": {
-        "i18n": {
-          "localized": true
-        }
-      }
-    },
-    "logoAlt": {
-      "type": "string",
-      "pluginOptions": {
-        "i18n": {
-          "localized": true
-        }
-      }
-    },
-    "brand": {
+    "badge": {
       "type": "string",
       "required": true,
       "pluginOptions": {
@@ -35,12 +15,7 @@
         }
       }
     },
-    "brandHref": {
-      "type": "string",
-      "required": true,
-      "default": "#top"
-    },
-    "tagline": {
+    "title": {
       "type": "string",
       "required": true,
       "pluginOptions": {
@@ -49,10 +24,19 @@
         }
       }
     },
-    "navigation": {
+    "subtitle": {
+      "type": "text",
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "steps": {
       "type": "component",
       "repeatable": true,
-      "component": "layout.navigation-item",
+      "component": "landing.process-step",
       "required": true,
       "min": 1,
       "pluginOptions": {
@@ -61,19 +45,17 @@
         }
       }
     },
-    "ctaLabel": {
-      "type": "string",
+    "metrics": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.metric",
       "required": true,
+      "min": 1,
       "pluginOptions": {
         "i18n": {
           "localized": true
         }
       }
-    },
-    "ctaHref": {
-      "type": "string",
-      "required": true,
-      "default": "#contact"
     }
   },
   "config": {}

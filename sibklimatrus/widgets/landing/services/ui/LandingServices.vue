@@ -1,5 +1,9 @@
 <script setup lang="ts">
 import type { Component } from 'vue'
+import type {
+  LandingServiceIconKey,
+  LandingServicesContent
+} from '@/entities/landing/page'
 import { Badge } from '@/components/ui/badge'
 import {
   Card,
@@ -8,8 +12,6 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card'
-import { serviceKeys } from '@/entities/landing/page'
-import { useI18n } from '#imports'
 import {
   Building2,
   Factory,
@@ -19,16 +21,20 @@ import {
   Wrench
 } from 'lucide-vue-next'
 
-const { t } = useI18n()
+defineProps<{
+  content: LandingServicesContent
+}>()
 
-const serviceIcons: Record<(typeof serviceKeys)[number], Component> = {
-  residential: Home,
-  commercial: Building2,
-  industrial: Factory,
-  ventilation: Wind,
-  service: Wrench,
-  automation: Settings2
+const serviceIcons: Partial<Record<LandingServiceIconKey, Component>> = {
+  home: Home,
+  building: Building2,
+  factory: Factory,
+  wind: Wind,
+  wrench: Wrench,
+  settings: Settings2
 }
+
+const fallbackServiceIcon = Settings2
 </script>
 
 <template>
@@ -41,20 +47,20 @@ const serviceIcons: Record<(typeof serviceKeys)[number], Component> = {
         variant="secondary"
         class="rounded-full px-4 py-1.5 text-xs uppercase tracking-[0.14em]"
       >
-        {{ t('landing.services.badge') }}
+        {{ content.badge }}
       </Badge>
       <h2 class="landing-section-title">
-        {{ t('landing.services.title') }}
+        {{ content.title }}
       </h2>
       <p class="landing-section-subtitle">
-        {{ t('landing.services.subtitle') }}
+        {{ content.subtitle }}
       </p>
     </div>
 
     <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
       <Card
-        v-for="serviceKey in serviceKeys"
-        :key="serviceKey"
+        v-for="service in content.items"
+        :key="service.id"
         class="gap-4 border-border/75 bg-card/92 backdrop-blur-sm"
       >
         <CardHeader class="gap-3">
@@ -64,34 +70,50 @@ const serviceIcons: Record<(typeof serviceKeys)[number], Component> = {
               class="rounded-full"
             >
               <component
-                :is="serviceIcons[serviceKey]"
+                :is="serviceIcons[service.iconKey] ?? fallbackServiceIcon"
                 class="mr-1 size-3.5"
               />
-              {{ t(`landing.services.items.${serviceKey}.chip`) }}
+              {{ service.chip }}
             </Badge>
           </div>
 
           <CardTitle class="text-lg">
-            {{ t(`landing.services.items.${serviceKey}.title`) }}
+            {{ service.title }}
           </CardTitle>
 
           <CardDescription>
-            {{ t(`landing.services.items.${serviceKey}.description`) }}
+            {{ service.description }}
           </CardDescription>
         </CardHeader>
 
         <CardContent class="space-y-3">
-          <div class="landing-media-placeholder aspect-[16/7]">
+          <img
+            v-if="service.image?.url"
+            :src="service.image.url"
+            :alt="service.image.alternativeText ?? service.title"
+            :width="service.image.width ?? 1200"
+            :height="service.image.height ?? 525"
+            loading="lazy"
+            class="aspect-[16/7] w-full rounded-xl border border-border/80 object-cover"
+          >
+          <div
+            v-else
+            class="landing-media-placeholder aspect-[16/7]"
+          >
             <div class="landing-media-placeholder-inner">
               <p class="text-xs text-muted-foreground">
-                {{ t('landing.mediaPlaceholder') }}
+                {{ content.mediaPlaceholder }}
               </p>
             </div>
           </div>
 
           <ul class="space-y-1.5 text-sm text-muted-foreground">
-            <li>- {{ t(`landing.services.items.${serviceKey}.point1`) }}</li>
-            <li>- {{ t(`landing.services.items.${serviceKey}.point2`) }}</li>
+            <li
+              v-for="point in service.points"
+              :key="point.id"
+            >
+              - {{ point.text }}
+            </li>
           </ul>
         </CardContent>
       </Card>

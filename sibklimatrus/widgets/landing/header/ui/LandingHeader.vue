@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import type { LandingHeaderContent } from '@/entities/landing/header'
-import { landingHeaderContent, resolveHeaderText } from '@/entities/landing/header'
+import { ref } from 'vue'
+import type { LandingHeaderContent } from '@/entities/landing/page'
 import { ThemeToggle } from '@/features/theme-toggle'
 import { Button } from '@/components/ui/button'
 import {
@@ -17,28 +16,13 @@ import { useI18n } from '#imports'
 import { Menu } from 'lucide-vue-next'
 
 interface Props {
-  content?: LandingHeaderContent
+  content: LandingHeaderContent
 }
 
-const props = defineProps<Props>()
+defineProps<Props>()
 
 const { t } = useI18n()
 const isMobileMenuOpen = ref(false)
-
-const sourceContent = computed(() => props.content ?? landingHeaderContent)
-
-const headerContent = computed(() => ({
-  brand: resolveHeaderText(sourceContent.value.brand, t),
-  tagline: resolveHeaderText(sourceContent.value.tagline, t),
-  navigation: sourceContent.value.navigation.map((item) => ({
-    ...item,
-    label: resolveHeaderText(item.label, t)
-  })),
-  cta: {
-    ...sourceContent.value.cta,
-    label: resolveHeaderText(sourceContent.value.cta.label, t)
-  }
-}))
 
 const closeMobileMenu = () => {
   isMobileMenuOpen.value = false
@@ -49,12 +33,27 @@ const closeMobileMenu = () => {
   <header class="landing-header-shell">
     <div class="landing-layout-container">
       <div class="flex h-16 items-center justify-between gap-3">
-        <a href="#top" class="flex min-w-0 flex-col">
-          <span class="truncate text-xs font-semibold uppercase tracking-brand text-primary">
-            {{ headerContent.brand }}
-          </span>
-          <span class="truncate text-xs text-muted-foreground sm:text-sm">
-            {{ headerContent.tagline }}
+        <a
+          :href="content.brandHref"
+          class="flex min-w-0 items-center gap-2.5"
+        >
+          <img
+            v-if="content.logo?.url"
+            :src="content.logo.url"
+            :alt="content.logo.alternativeText ?? content.brand"
+            :width="content.logo.width ?? 160"
+            :height="content.logo.height ?? 40"
+            class="h-9 w-auto max-w-28 shrink-0 object-contain sm:max-w-36"
+            loading="eager"
+            decoding="async"
+          >
+          <span class="flex min-w-0 flex-col">
+            <span class="truncate text-xs font-semibold uppercase tracking-brand text-primary">
+              {{ content.brand }}
+            </span>
+            <span class="truncate text-xs text-muted-foreground sm:text-sm">
+              {{ content.tagline }}
+            </span>
           </span>
         </a>
 
@@ -63,7 +62,7 @@ const closeMobileMenu = () => {
           class="hidden items-center gap-1 min-[1100px]:flex"
         >
           <a
-            v-for="item in headerContent.navigation"
+            v-for="item in content.navigation"
             :key="item.id"
             :href="item.href"
             class="rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
@@ -98,10 +97,10 @@ const closeMobileMenu = () => {
             >
               <SheetHeader class="border-b border-border/70 px-5 py-4 text-left">
                 <SheetTitle class="text-xs uppercase tracking-brand text-primary">
-                  {{ headerContent.brand }}
+                  {{ content.brand }}
                 </SheetTitle>
                 <SheetDescription class="text-sm">
-                  {{ headerContent.tagline }}
+                  {{ content.tagline }}
                 </SheetDescription>
               </SheetHeader>
 
@@ -110,7 +109,7 @@ const closeMobileMenu = () => {
                 class="flex flex-col gap-1 px-3 py-4"
               >
                 <SheetClose
-                  v-for="item in headerContent.navigation"
+                  v-for="item in content.navigation"
                   :key="item.id"
                   as-child
                 >
@@ -130,10 +129,10 @@ const closeMobileMenu = () => {
                     class="mt-2 w-full"
                   >
                     <a
-                      :href="headerContent.cta.href"
+                      :href="content.ctaHref"
                       @click="closeMobileMenu"
                     >
-                      {{ headerContent.cta.label }}
+                      {{ content.ctaLabel }}
                     </a>
                   </Button>
                 </SheetClose>
@@ -146,8 +145,8 @@ const closeMobileMenu = () => {
             size="sm"
             class="hidden min-[1100px]:inline-flex"
           >
-            <a :href="headerContent.cta.href">
-              {{ headerContent.cta.label }}
+            <a :href="content.ctaHref">
+              {{ content.ctaLabel }}
             </a>
           </Button>
         </div>

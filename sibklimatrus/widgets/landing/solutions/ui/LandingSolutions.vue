@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { ref, watch } from 'vue'
+import type { LandingSolutionsContent } from '@/entities/landing/page'
 import { Badge } from '@/components/ui/badge'
 import {
   Card,
@@ -13,10 +15,21 @@ import {
   TabsList,
   TabsTrigger
 } from '@/components/ui/tabs'
-import { solutionTabs } from '@/entities/landing/page'
-import { useI18n } from '#imports'
 
-const { t } = useI18n()
+const props = defineProps<{
+  content: LandingSolutionsContent
+}>()
+
+const activeTab = ref(props.content.tabs[0]?.id ?? '')
+
+watch(
+  () => props.content.tabs.map((tab) => tab.id),
+  (tabIds) => {
+    if (!tabIds.includes(activeTab.value)) {
+      activeTab.value = tabIds[0] ?? ''
+    }
+  }
+)
 </script>
 
 <template>
@@ -29,63 +42,79 @@ const { t } = useI18n()
         variant="secondary"
         class="rounded-full px-4 py-1.5 text-xs uppercase tracking-[0.14em]"
       >
-        {{ t('landing.solutions.badge') }}
+        {{ content.badge }}
       </Badge>
       <h2 class="landing-section-title">
-        {{ t('landing.solutions.title') }}
+        {{ content.title }}
       </h2>
       <p class="landing-section-subtitle">
-        {{ t('landing.solutions.subtitle') }}
+        {{ content.subtitle }}
       </p>
     </div>
 
     <Tabs
-      default-value="apartments"
+      v-model="activeTab"
       class="gap-5"
     >
       <TabsList class="h-auto w-full justify-start overflow-x-auto rounded-xl bg-card/86 p-1.5">
         <TabsTrigger
-          v-for="tab in solutionTabs"
-          :key="tab.value"
-          :value="tab.value"
+          v-for="tab in content.tabs"
+          :key="tab.id"
+          :value="tab.id"
           class="rounded-lg px-4 py-2"
         >
-          {{ t(`landing.solutions.tabs.${tab.value}.label`) }}
+          {{ tab.label }}
         </TabsTrigger>
       </TabsList>
 
       <TabsContent
-        v-for="tab in solutionTabs"
-        :key="tab.value"
-        :value="tab.value"
+        v-for="tab in content.tabs"
+        :key="tab.id"
+        :value="tab.id"
       >
         <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           <Card
-            v-for="cardKey in tab.cardKeys"
-            :key="cardKey"
+            v-for="card in tab.cards"
+            :key="card.id"
             class="gap-4 border-border/75 bg-card/92 backdrop-blur-sm"
           >
             <CardHeader>
               <CardTitle class="text-lg">
-                {{ t(`landing.solutions.tabs.${tab.value}.cards.${cardKey}.title`) }}
+                {{ card.title }}
               </CardTitle>
               <CardDescription>
-                {{ t(`landing.solutions.tabs.${tab.value}.cards.${cardKey}.description`) }}
+                {{ card.description }}
               </CardDescription>
             </CardHeader>
 
             <CardContent class="space-y-3">
-              <div class="landing-media-placeholder aspect-[16/8]">
+              <img
+                v-if="card.image?.url"
+                :src="card.image.url"
+                :alt="card.image.alternativeText ?? card.title"
+                :width="card.image.width ?? 1200"
+                :height="card.image.height ?? 600"
+                loading="lazy"
+                class="aspect-[16/8] w-full rounded-xl border border-border/80 object-cover"
+              >
+              <div
+                v-else
+                class="landing-media-placeholder aspect-[16/8]"
+              >
                 <div class="landing-media-placeholder-inner">
                   <p class="text-xs text-muted-foreground">
-                    {{ t('landing.mediaPlaceholder') }}
+                    {{ content.mediaPlaceholder }}
                   </p>
                 </div>
               </div>
 
               <ul class="space-y-1.5 text-sm text-muted-foreground">
-                <li>- {{ t(`landing.solutions.tabs.${tab.value}.cards.${cardKey}.point1`) }}</li>
-                <li>- {{ t(`landing.solutions.tabs.${tab.value}.cards.${cardKey}.point2`) }}</li>
+                <li
+                  v-for="point in card.points"
+                  :key="point.id"
+                >
+                  - {{ point.text }}
+                </li>
               </ul>
             </CardContent>
           </Card>

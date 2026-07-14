@@ -1,0 +1,20 @@
+{
+  "collectionName": "components_shared_text_items",
+  "info": {
+    "displayName": "Text Item",
+    "description": "Reusable ordered text item"
+  },
+  "options": {},
+  "attributes": {
+    "text": {
+      "type": "text",
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    }
+  },
+  "config": {}
+}

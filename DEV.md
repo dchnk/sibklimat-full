@@ -21,6 +21,10 @@ npm run dev
 
 Команда `npm run dev` поднимает оба сервиса через `compose.dev.yaml` с hot reload.
 
+Dev Compose изолирует Linux-generated каталоги Strapi `.strapi` и `dist` в named volumes. Это важно на Windows: host-сборка создаёт в `.strapi/client/index.html` путь с обратными слешами, из-за которого admin отдаёт белую страницу без JavaScript. Не убирай mounts `strapi_runtime:/app/.strapi` и `strapi_dist:/app/dist`.
+
+Strapi запускается с `--no-watch-admin`: backend schema/API продолжает перезапускаться при изменениях, а admin собирается статически вместо нестабильной on-demand Vite-сборки через Windows bind mount. При изменении `src/admin` перезапусти Strapi-контейнер. Первый запуск после изменения schemas может занять несколько минут; ориентируйся на строку `Strapi started successfully` в `npm run dev:logs`, а не только на статус контейнера `Running`.
+
 ## Основные команды
 
 ```bash
@@ -64,15 +68,32 @@ npm run deploy:down    # остановить production compose
 
 ## Контент Strapi
 
-Фронтенд читает `GET /api/homepage` и использует данные из компонента `header`.
-Если Strapi недоступен, запись не опубликована или public permission не открыт,
-Nuxt покажет fallback-контент из кода.
+Фронтенд читает `GET /api/homepage` с явным deep populate и получает весь лендинг из Single Type `Homepage`:
+
+- `seo`;
+- `header`;
+- `hero`;
+- `services`;
+- `solutions`;
+- `process`;
+- `faq`;
+- `contact`;
+- `footer`.
+
+Карточки, вкладки, KPI, этапы, FAQ, контакты и варианты формы представлены repeatable components, поэтому их порядок задаётся в админке. Логотип, hero, карточки услуг/решений, карта и social preview используют Strapi Media Library. Относительные media URL преобразуются Nuxt в публичный `NUXT_PUBLIC_STRAPI_URL`.
+
+Все top-level компоненты optional. Если отдельная секция отсутствует или не проходит runtime-проверку, Nuxt использует локализованный fallback только для этой секции. Если Strapi полностью недоступен, запись не опубликована или public permission не открыт, вся страница продолжит работать на fallback-контенте из кода.
 
 После первого запуска:
 
 1. Создать администратора в `http://localhost:1337/admin`.
-2. Заполнить и опубликовать Single Type `Homepage`.
-3. Открыть public permission на чтение `Homepage.find`, если API должен быть доступен без токена.
+2. Добавить Strapi-локали `ru-RU` и `en`, если их ещё нет. Nuxt использует внутренний код `ru` и преобразует его в `ru-RU` при запросе CMS.
+3. Заполнить нужные секции и загрузить изображения в Single Type `Homepage` отдельно для каждой локали.
+4. Опубликовать каждую используемую локаль Homepage.
+5. Открыть public permission на чтение `Homepage.find`, если API должен быть доступен без токена.
+6. Проверить реальный JSON API и изображения: визуально корректная страница может быть fallback, если CMS не настроена.
+
+Seed/bootstrap для Homepage пока нет: контент, локали, публикации и permission на чистом volume настраиваются вручную. Dev и production используют разные volumes, поэтому контент между ними автоматически не переносится.
 
 ## Production compose
 

@@ -1,5 +1,10 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
+import type { Component } from 'vue'
+import type {
+  LandingContactChannelType,
+  LandingContactContent
+} from '@/entities/landing/page'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -20,29 +25,33 @@ import {
   SelectValue
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { contactChannelKeys } from '@/entities/landing/page'
-import { useI18n } from '#imports'
-import { Mail, MapPin, Phone } from 'lucide-vue-next'
+import { Mail, MapPin, MessageCircle, Phone } from 'lucide-vue-next'
 
-const { t } = useI18n()
+const props = defineProps<{
+  content: LandingContactContent
+}>()
 
 const name = ref('')
 const phone = ref('')
-const requestType = ref('consultation')
+const requestType = ref(props.content.form.options[0]?.value ?? '')
 const details = ref('')
 const agree = ref(false)
 
-const contactLinks = {
-  phone: 'tel:+73832120000',
-  email: 'mailto:hello@sibklimat.ru',
-  location: 'https://yandex.ru/maps'
-} as const
+watch(
+  () => props.content.form.options.map((option) => option.value),
+  (optionValues) => {
+    if (!optionValues.includes(requestType.value)) {
+      requestType.value = optionValues[0] ?? ''
+    }
+  }
+)
 
-const contactIcons = {
+const contactIcons: Record<LandingContactChannelType, Component> = {
   phone: Phone,
   email: Mail,
-  location: MapPin
-} as const
+  location: MapPin,
+  other: MessageCircle
+}
 </script>
 
 <template>
@@ -55,13 +64,13 @@ const contactIcons = {
         variant="secondary"
         class="rounded-full px-4 py-1.5 text-xs uppercase tracking-[0.14em]"
       >
-        {{ t('landing.contact.badge') }}
+        {{ content.badge }}
       </Badge>
       <h2 class="landing-section-title">
-        {{ t('landing.contact.title') }}
+        {{ content.title }}
       </h2>
       <p class="landing-section-subtitle">
-        {{ t('landing.contact.subtitle') }}
+        {{ content.subtitle }}
       </p>
     </div>
 
@@ -69,43 +78,55 @@ const contactIcons = {
       <Card class="gap-4 border-border/75 bg-card/92 backdrop-blur-sm">
         <CardHeader class="space-y-3">
           <CardTitle class="text-xl">
-            {{ t('landing.contact.directTitle') }}
+            {{ content.directTitle }}
           </CardTitle>
           <CardDescription>
-            {{ t('landing.contact.directDescription') }}
+            {{ content.directDescription }}
           </CardDescription>
         </CardHeader>
 
         <CardContent class="space-y-3">
           <a
-            v-for="channel in contactChannelKeys"
-            :key="channel"
-            :href="contactLinks[channel]"
-            target="_blank"
-            rel="noopener noreferrer"
+            v-for="channel in content.channels"
+            :key="channel.id"
+            :href="channel.href"
+            :target="channel.openInNewTab ? '_blank' : undefined"
+            :rel="channel.openInNewTab ? 'noopener noreferrer' : undefined"
             class="flex items-center gap-3 rounded-xl border border-border/75 bg-background/90 p-3 transition-colors hover:bg-accent/70"
           >
             <component
-              :is="contactIcons[channel]"
+              :is="contactIcons[channel.type]"
               class="size-4 text-primary"
             />
             <div class="min-w-0">
               <p class="text-xs uppercase tracking-[0.12em] text-muted-foreground">
-                {{ t(`landing.contact.channels.${channel}.label`) }}
+                {{ channel.label }}
               </p>
               <p class="truncate text-sm font-medium">
-                {{ t(`landing.contact.channels.${channel}.value`) }}
+                {{ channel.value }}
               </p>
             </div>
           </a>
 
-          <div class="landing-media-placeholder mt-4 aspect-[16/8]">
+          <img
+            v-if="content.mapImage?.url"
+            :src="content.mapImage.url"
+            :alt="content.mapImage.alternativeText ?? content.mapPlaceholderTitle"
+            :width="content.mapImage.width ?? 1200"
+            :height="content.mapImage.height ?? 600"
+            loading="lazy"
+            class="mt-4 aspect-[16/8] w-full rounded-xl border border-border/80 object-cover"
+          >
+          <div
+            v-else
+            class="landing-media-placeholder mt-4 aspect-[16/8]"
+          >
             <div class="landing-media-placeholder-inner">
               <p class="text-sm font-medium">
-                {{ t('landing.contact.mapPlaceholderTitle') }}
+                {{ content.mapPlaceholderTitle }}
               </p>
               <p class="mt-1 text-xs text-muted-foreground">
-                {{ t('landing.contact.mapPlaceholderDescription') }}
+                {{ content.mapPlaceholderDescription }}
               </p>
             </div>
           </div>
@@ -115,10 +136,10 @@ const contactIcons = {
       <Card class="gap-4 border-border/75 bg-card/92 backdrop-blur-sm">
         <CardHeader>
           <CardTitle class="text-xl">
-            {{ t('landing.contact.form.title') }}
+            {{ content.form.title }}
           </CardTitle>
           <CardDescription>
-            {{ t('landing.contact.form.description') }}
+            {{ content.form.description }}
           </CardDescription>
         </CardHeader>
 
@@ -126,44 +147,42 @@ const contactIcons = {
           <div class="grid gap-3 md:grid-cols-2">
             <div class="space-y-2">
               <Label for="landing-name">
-                {{ t('landing.contact.form.fields.name') }}
+                {{ content.form.nameLabel }}
               </Label>
               <Input
                 id="landing-name"
                 v-model="name"
-                :placeholder="t('landing.contact.form.placeholders.name')"
+                :placeholder="content.form.namePlaceholder"
               />
             </div>
 
             <div class="space-y-2">
               <Label for="landing-phone">
-                {{ t('landing.contact.form.fields.phone') }}
+                {{ content.form.phoneLabel }}
               </Label>
               <Input
                 id="landing-phone"
                 v-model="phone"
-                :placeholder="t('landing.contact.form.placeholders.phone')"
+                :placeholder="content.form.phonePlaceholder"
               />
             </div>
           </div>
 
           <div class="space-y-2">
             <Label for="landing-request-type">
-              {{ t('landing.contact.form.fields.requestType') }}
+              {{ content.form.requestTypeLabel }}
             </Label>
             <Select v-model="requestType">
               <SelectTrigger id="landing-request-type">
-                <SelectValue :placeholder="t('landing.contact.form.placeholders.requestType')" />
+                <SelectValue :placeholder="content.form.requestTypePlaceholder" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="consultation">
-                  {{ t('landing.contact.form.options.consultation') }}
-                </SelectItem>
-                <SelectItem value="installation">
-                  {{ t('landing.contact.form.options.installation') }}
-                </SelectItem>
-                <SelectItem value="service">
-                  {{ t('landing.contact.form.options.service') }}
+                <SelectItem
+                  v-for="option in content.form.options"
+                  :key="option.id"
+                  :value="option.value"
+                >
+                  {{ option.label }}
                 </SelectItem>
               </SelectContent>
             </Select>
@@ -171,29 +190,26 @@ const contactIcons = {
 
           <div class="space-y-2">
             <Label for="landing-details">
-              {{ t('landing.contact.form.fields.details') }}
+              {{ content.form.detailsLabel }}
             </Label>
             <Textarea
               id="landing-details"
               v-model="details"
               class="min-h-24"
-              :placeholder="t('landing.contact.form.placeholders.details')"
+              :placeholder="content.form.detailsPlaceholder"
             />
           </div>
 
           <Label class="gap-3 rounded-lg border border-border/75 bg-background/90 p-3 text-sm text-muted-foreground">
-            <Checkbox
-              :checked="agree"
-              @update:checked="(value: boolean | 'indeterminate') => { agree = value === true }"
-            />
-            {{ t('landing.contact.form.agreement') }}
+            <Checkbox v-model="agree" />
+            {{ content.form.agreementLabel }}
           </Label>
 
           <Button
             class="w-full"
             size="lg"
           >
-            {{ t('landing.contact.form.submit') }}
+            {{ content.form.submitLabel }}
           </Button>
         </CardContent>
       </Card>

@@ -1,0 +1,29 @@
+{
+  "collectionName": "components_shared_metrics",
+  "info": {
+    "displayName": "Metric",
+    "description": "Value and label pair for KPI or metric cards"
+  },
+  "options": {},
+  "attributes": {
+    "value": {
+      "type": "string",
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "label": {
+      "type": "string",
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    }
+  },
+  "config": {}
+}

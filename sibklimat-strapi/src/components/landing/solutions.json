@@ -1,32 +1,12 @@
 {
-  "collectionName": "components_layout_headers",
+  "collectionName": "components_landing_solutions",
   "info": {
-    "displayName": "Header",
-    "description": "Landing page header content"
+    "displayName": "Solutions",
+    "description": "Solutions section heading and tabs"
   },
   "options": {},
   "attributes": {
-    "logo": {
-      "type": "media",
-      "multiple": false,
-      "allowedTypes": [
-        "images"
-      ],
-      "pluginOptions": {
-        "i18n": {
-          "localized": true
-        }
-      }
-    },
-    "logoAlt": {
-      "type": "string",
-      "pluginOptions": {
-        "i18n": {
-          "localized": true
-        }
-      }
-    },
-    "brand": {
+    "badge": {
       "type": "string",
       "required": true,
       "pluginOptions": {
@@ -35,12 +15,7 @@
         }
       }
     },
-    "brandHref": {
-      "type": "string",
-      "required": true,
-      "default": "#top"
-    },
-    "tagline": {
+    "title": {
       "type": "string",
       "required": true,
       "pluginOptions": {
@@ -49,10 +24,28 @@
         }
       }
     },
-    "navigation": {
+    "subtitle": {
+      "type": "text",
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "mediaPlaceholder": {
+      "type": "string",
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "tabs": {
       "type": "component",
       "repeatable": true,
-      "component": "layout.navigation-item",
+      "component": "landing.solution-tab",
       "required": true,
       "min": 1,
       "pluginOptions": {
@@ -60,20 +53,6 @@
           "localized": true
         }
       }
-    },
-    "ctaLabel": {
-      "type": "string",
-      "required": true,
-      "pluginOptions": {
-        "i18n": {
-          "localized": true
-        }
-      }
-    },
-    "ctaHref": {
-      "type": "string",
-      "required": true,
-      "default": "#contact"
     }
   },
   "config": {}

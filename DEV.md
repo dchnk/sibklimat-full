@@ -80,7 +80,7 @@ npm run deploy:down    # остановить production compose
 - `contact`;
 - `footer`.
 
-Карточки, вкладки, KPI, этапы, FAQ, контакты и варианты формы представлены repeatable components, поэтому их порядок задаётся в админке. Логотип, hero, карточки услуг/решений, карта и social preview используют Strapi Media Library. Относительные media URL преобразуются Nuxt в публичный `NUXT_PUBLIC_STRAPI_URL`.
+Карточки, вкладки, KPI, этапы, FAQ, контакты и варианты формы представлены repeatable components, поэтому их порядок задаётся в админке. Логотип, hero, карточки услуг/решений, карта и social preview используют Strapi Media Library. Все media опциональны: без них frontend показывает CSS placeholders, а относительные media URL преобразуются Nuxt в публичный `NUXT_PUBLIC_STRAPI_URL`.
 
 Все top-level компоненты optional. Если отдельная секция отсутствует или не проходит runtime-проверку, Nuxt использует локализованный fallback только для этой секции. Если Strapi полностью недоступен, запись не опубликована или public permission не открыт, вся страница продолжит работать на fallback-контенте из кода.
 
@@ -88,12 +88,27 @@ npm run deploy:down    # остановить production compose
 
 1. Создать администратора в `http://localhost:1337/admin`.
 2. Добавить Strapi-локали `ru-RU` и `en`, если их ещё нет. Nuxt использует внутренний код `ru` и преобразует его в `ru-RU` при запросе CMS.
-3. Заполнить нужные секции и загрузить изображения в Single Type `Homepage` отдельно для каждой локали.
+3. Заполнить нужные секции в Single Type `Homepage` отдельно для каждой локали; изображения можно добавить позднее.
 4. Опубликовать каждую используемую локаль Homepage.
 5. Открыть public permission на чтение `Homepage.find`, если API должен быть доступен без токена.
 6. Проверить реальный JSON API и изображения: визуально корректная страница может быть fallback, если CMS не настроена.
 
-Seed/bootstrap для Homepage пока нет: контент, локали, публикации и permission на чистом volume настраиваются вручную. Dev и production используют разные volumes, поэтому контент между ними автоматически не переносится.
+Автоматического seed/bootstrap для Homepage пока нет: локали, admin и permission на чистом volume настраиваются вручную. Для русского текстового контента есть явно запускаемый импорт ниже. Dev и production используют разные volumes, поэтому контент между ними автоматически не переносится.
+
+### Одноразовый импорт русского текста
+
+Экспортёр собирает текущий `ru.ts` fallback в полный Strapi payload, а импортёр обновляет и публикует только `ru-RU`. Английская локаль не меняется; существующий header logo сохраняется. Без `--force` уже существующий русский документ не перезаписывается.
+
+Перед импортом останови Strapi и сделай резервную копию dev SQLite:
+
+```powershell
+docker compose -f compose.dev.yaml stop strapi
+docker compose -f compose.dev.yaml cp strapi:/app/.tmp/data.db ./sibklimat-strapi/.tmp/data.db.before-homepage-ru.bak
+node --no-warnings --experimental-strip-types .\sibklimatrus\scripts\export-homepage-ru.mjs | docker compose -f compose.dev.yaml run --rm -T --no-deps strapi node scripts/import-homepage-ru.mjs --force
+docker compose -f compose.dev.yaml start strapi
+```
+
+Даже после неуспешного импорта обязательно снова запусти сервис. Затем проверь опубликованный `GET /api/homepage?locale=ru-RU` с полным deep populate и SSR `/`.
 
 ## Production compose
 

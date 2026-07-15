@@ -8,12 +8,12 @@
   "attributes": {
     "label": {
       "type": "string",
-      "required": true,
       "pluginOptions": {
         "i18n": {
           "localized": true
         }
-      }
+      },
+      "required": true
     },
     "href": {
       "type": "string",

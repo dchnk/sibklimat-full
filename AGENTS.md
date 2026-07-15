@@ -2,7 +2,7 @@
 
 Этот файл предназначен для Codex и других инженерных агентов, которые начинают задачу без истории предыдущих сессий. Он фиксирует архитектуру, сквозные контракты и безопасные правила работы. Код, схемы Strapi, конфигурация и фактическое состояние окружения всегда имеют приоритет над этим снимком.
 
-Контекст обновлён 2026-07-14 после перевода всей страницы на управляемый из Strapi контент. Исходной точкой был `main`, commit `cd04bf3` (`cd04bf36ed151cd60a6054547cb90f5c14a14f86`); сама full-CMS миграция на момент обновления находилась в рабочем дереве. Если HEAD или схемы изменились, сначала перепроверь затронутые разделы.
+Контекст обновлён 2026-07-14 после перевода всей страницы на управляемый из Strapi контент и коммита `96d9f27` (`96d9f275fa6ef49a0fbda9e105c748216bc7950e`). Если HEAD или схемы изменились, сначала перепроверь затронутые разделы.
 
 ## Что сделать в начале любой задачи
 
@@ -157,7 +157,7 @@ CMS-изображения поддержаны для:
 
 Frontend читает `url`, `alternativeText`, `width`, `height`, `name`, `mime`, `caption`. Явные поля `logoAlt`, `panelImageAlt`, `imageAlt`, `mapImageAlt`, `shareImageAlt` имеют приоритет как отображаемый alt. Относительный `/uploads/...` нормализуется через `NUXT_PUBLIC_STRAPI_URL`.
 
-В CMS все перечисленные изображения, кроме header logo, обязательны внутри добавленной секции. В domain types media остаётся optional, потому что локальный fallback использует существующие CSS placeholders. Header logo и logoAlt опциональны для обратной совместимости.
+Все CMS media-поля опциональны: текстовую секцию можно опубликовать без изображения, и widget покажет существующий CSS placeholder. Соответствующие alt-поля остаются обязательными для добавленной секции, чтобы подпись была готова до загрузки media. Domain types также держат media optional; header logo и logoAlt опциональны для обратной совместимости.
 
 ### Fallback и локализация
 
@@ -205,7 +205,7 @@ Frontend читает `url`, `alternativeText`, `width`, `height`, `name`, `mime
 - SQLite через `better-sqlite3` 12.4.1.
 - Один локализованный single type `Homepage`, Draft & Publish включён.
 - 20 component schemas: 14 landing, 3 layout, 3 shared.
-- Стандартные core controller/router/service; нет custom policies, lifecycle hooks, jobs, seed/bootstrap, migrations или tests.
+- Стандартные core controller/router/service; нет custom policies, lifecycle hooks, jobs, автоматического seed/bootstrap, migrations или tests. Есть только явно запускаемый одноразовый импорт русского fallback-контента через `sibklimatrus/scripts/export-homepage-ru.mjs` и `sibklimat-strapi/scripts/import-homepage-ru.mjs`.
 - `src/index.ts` содержит пустые `register()` и `bootstrap()`.
 - Generated Strapi types отслеживаются Git.
 
@@ -261,12 +261,12 @@ Frontend types написаны вручную и не импортируют St
 
 ### Чистая CMS-среда
 
-Код не создаёт admin, locale, Homepage, публикации или permission автоматически. На новом volume:
+Код не создаёт admin, locale, Homepage, публикации или permission автоматически. Русский текст можно импортировать отдельным runbook из `DEV.md`, но сначала на новом volume:
 
 1. создать Strapi admin;
 2. добавить/включить Strapi-локали `ru-RU` и `en`;
 3. создать Homepage для каждой locale;
-4. заполнить все нужные sections, списки и media;
+4. заполнить все нужные sections и списки; media можно добавить позже;
 5. опубликовать каждую locale;
 6. открыть Public `Homepage.find`, если endpoint должен быть anonymous;
 7. проверить JSON endpoint с тем же deep-populate query;
@@ -378,7 +378,7 @@ npm run build
 Обычное изменение текста/картинки/порядка:
 
 1. редактировать соответствующую locale Homepage в Strapi admin;
-2. загрузить media и заполнить явный alt;
+2. при необходимости загрузить media; явный alt остаётся обязательным полем секции;
 3. опубликовать locale;
 4. проверить API и страницу.
 
@@ -402,7 +402,7 @@ npm run build
 ## Известные production-блокеры
 
 1. Compose secrets являются placeholders, нужна генерация/ротация.
-2. CMS state невоспроизводим: нет seed/bootstrap/export-import runbook.
+2. Полный CMS state всё ещё невоспроизводим: есть импорт только русского текстового fallback, но нет автоматизации admin, locales, permissions, media и общего export/import между средами.
 3. Dev/prod/host БД и uploads раздельны.
 4. Contact form ничего не отправляет и не валидирует персональные данные.
 5. Демо-контакты, KPI, гарантии и бизнес-утверждения требуют подтверждения.

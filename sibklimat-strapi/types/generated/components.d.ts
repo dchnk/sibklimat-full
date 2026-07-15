@@ -49,7 +49,6 @@ export interface LandingContact extends Struct.ComponentSchema {
         };
       }>;
     mapImage: Schema.Attribute.Media<'images'> &
-      Schema.Attribute.Required &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
           localized: true;
@@ -336,7 +335,6 @@ export interface LandingHero extends Struct.ComponentSchema {
         };
       }>;
     panelImage: Schema.Attribute.Media<'images'> &
-      Schema.Attribute.Required &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
           localized: true;
@@ -570,7 +568,6 @@ export interface LandingServiceItem extends Struct.ComponentSchema {
     > &
       Schema.Attribute.Required;
     image: Schema.Attribute.Media<'images'> &
-      Schema.Attribute.Required &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
           localized: true;
@@ -673,7 +670,6 @@ export interface LandingSolutionCard extends Struct.ComponentSchema {
         };
       }>;
     image: Schema.Attribute.Media<'images'> &
-      Schema.Attribute.Required &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
           localized: true;
@@ -942,7 +938,6 @@ export interface SharedSeo extends Struct.ComponentSchema {
         };
       }>;
     shareImage: Schema.Attribute.Media<'images'> &
-      Schema.Attribute.Required &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
           localized: true;

@@ -219,9 +219,11 @@ const mapSeo = (value: unknown, publicStrapiUrl: string): LandingSeoContent | nu
   const metaTitle = getRequiredString(record, 'metaTitle')
   const metaDescription = getRequiredString(record, 'metaDescription')
   const shareImageAlt = getRequiredString(record, 'shareImageAlt')
-  const shareImage = mapMedia(record.shareImage, shareImageAlt ?? undefined, publicStrapiUrl)
+  const shareImage = record.shareImage
+    ? mapMedia(record.shareImage, shareImageAlt ?? undefined, publicStrapiUrl) ?? undefined
+    : undefined
 
-  return metaTitle && metaDescription && shareImageAlt && shareImage
+  return metaTitle && metaDescription && shareImageAlt && (!record.shareImage || shareImage)
     ? { metaTitle, metaDescription, shareImage }
     : null
 }
@@ -280,7 +282,9 @@ const mapHero = (value: unknown, publicStrapiUrl: string): LandingHeroContent | 
   const panelTitle = getRequiredString(record, 'panelTitle')
   const panelDescription = getRequiredString(record, 'panelDescription')
   const panelImageAlt = getRequiredString(record, 'panelImageAlt')
-  const panelImage = mapMedia(record.panelImage, panelImageAlt ?? undefined, publicStrapiUrl)
+  const panelImage = record.panelImage
+    ? mapMedia(record.panelImage, panelImageAlt ?? undefined, publicStrapiUrl) ?? undefined
+    : undefined
   const panelPlaceholderTitle = getRequiredString(record, 'panelPlaceholderTitle')
   const panelPlaceholderDescription = getRequiredString(
     record,
@@ -293,7 +297,8 @@ const mapHero = (value: unknown, publicStrapiUrl: string): LandingHeroContent | 
     !badge || !title || !subtitle || !primaryCtaLabel || !primaryCtaHref ||
     !secondaryCtaLabel || !kpis || !quickDialogTitle || !quickDialogDescription ||
     !quickDialogItems || !panelTitle || !panelDescription || !panelImageAlt ||
-    !panelImage || !panelPlaceholderTitle || !panelPlaceholderDescription || !panelPoints
+    (record.panelImage && !panelImage) || !panelPlaceholderTitle ||
+    !panelPlaceholderDescription || !panelPoints
   ) {
     return null
   }
@@ -332,11 +337,14 @@ const mapServiceItem = (
   const title = getRequiredString(record, 'title')
   const description = getRequiredString(record, 'description')
   const imageAlt = getRequiredString(record, 'imageAlt')
-  const image = mapMedia(record.image, imageAlt ?? undefined, publicStrapiUrl)
+  const image = record.image
+    ? mapMedia(record.image, imageAlt ?? undefined, publicStrapiUrl) ?? undefined
+    : undefined
   const points = mapRequiredList(record.points, (item, pointIndex) =>
     mapTextItem(item, pointIndex, `service-${index}-point`))
 
-  return slug && iconKey && chip && title && description && imageAlt && image && points
+  return slug && iconKey && chip && title && description && imageAlt &&
+    (!record.image || image) && points
     ? {
         id: getDomainId(record, 'service', index),
         slug,
@@ -381,11 +389,13 @@ const mapSolutionCard = (
   const title = getRequiredString(record, 'title')
   const description = getRequiredString(record, 'description')
   const imageAlt = getRequiredString(record, 'imageAlt')
-  const image = mapMedia(record.image, imageAlt ?? undefined, publicStrapiUrl)
+  const image = record.image
+    ? mapMedia(record.image, imageAlt ?? undefined, publicStrapiUrl) ?? undefined
+    : undefined
   const points = mapRequiredList(record.points, (item, pointIndex) =>
     mapTextItem(item, pointIndex, `solution-${tabIndex}-${index}-point`))
 
-  return slug && title && description && imageAlt && image && points
+  return slug && title && description && imageAlt && (!record.image || image) && points
     ? {
         id: getDomainId(record, `solution-${tabIndex}`, index),
         slug,
@@ -594,14 +604,17 @@ const mapContact = (
   const directDescription = getRequiredString(record, 'directDescription')
   const channels = mapRequiredList(record.channels, mapContactChannel)
   const mapImageAlt = getRequiredString(record, 'mapImageAlt')
-  const mapImage = mapMedia(record.mapImage, mapImageAlt ?? undefined, publicStrapiUrl)
+  const mapImage = record.mapImage
+    ? mapMedia(record.mapImage, mapImageAlt ?? undefined, publicStrapiUrl) ?? undefined
+    : undefined
   const mapPlaceholderTitle = getRequiredString(record, 'mapPlaceholderTitle')
   const mapPlaceholderDescription = getRequiredString(record, 'mapPlaceholderDescription')
   const form = mapContactForm(record.form)
 
   if (
     !badge || !title || !subtitle || !directTitle || !directDescription || !channels ||
-    !mapImageAlt || !mapImage || !mapPlaceholderTitle || !mapPlaceholderDescription || !form
+    !mapImageAlt || (record.mapImage && !mapImage) || !mapPlaceholderTitle ||
+    !mapPlaceholderDescription || !form
   ) {
     return null
   }

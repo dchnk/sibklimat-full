@@ -47,18 +47,27 @@ interface LeadData {
 
 const rateLimitBuckets = new Map<string, RateLimitBucket>()
 
+const normalizeRussianPhone = (value: string) => {
+  const digits = value.replace(/\D/g, '')
+  const nationalNumber =
+    digits.length === 10
+      ? digits
+      : digits.length === 11 && ['7', '8'].includes(digits[0] ?? '')
+        ? digits.slice(1)
+        : null
+
+  return nationalNumber ? `+7${nationalNumber}` : null
+}
+
 const leadSchema = z
   .object({
-    name: z.string().trim().min(2).max(100),
+    name: z.string().trim().min(2).max(30),
     phone: z
       .string()
       .trim()
-      .min(6)
       .max(32)
-      .refine((value) => {
-        const digitCount = value.replace(/\D/g, '').length
-        return digitCount >= 7 && digitCount <= 15
-      }),
+      .refine((value) => normalizeRussianPhone(value) !== null)
+      .transform((value) => normalizeRussianPhone(value) as string),
     requestType: z
       .string()
       .trim()

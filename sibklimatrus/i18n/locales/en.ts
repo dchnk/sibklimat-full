@@ -316,8 +316,8 @@ export default {
         agreement: 'I agree to personal data processing and communication regarding this request.',
         submit: 'Send request',
         feedback: {
-          nameInvalid: 'Enter a name between 2 and 100 characters.',
-          phoneInvalid: 'Enter a valid phone number.',
+          nameInvalid: 'Enter a name between 2 and 30 characters.',
+          phoneInvalid: 'Enter a valid Russian phone number.',
           requestTypeInvalid: 'Choose a request type.',
           agreementRequired: 'Confirm your consent to personal data processing.',
           captchaRequired: 'Confirm that you are not a robot.',

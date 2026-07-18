@@ -560,7 +560,7 @@ export interface ApiLeadLead extends Struct.CollectionTypeSchema {
     name: Schema.Attribute.String &
       Schema.Attribute.Required &
       Schema.Attribute.SetMinMaxLength<{
-        maxLength: 100;
+        maxLength: 30;
         minLength: 2;
       }>;
     pageUrl: Schema.Attribute.String &
@@ -570,8 +570,8 @@ export interface ApiLeadLead extends Struct.CollectionTypeSchema {
     phone: Schema.Attribute.String &
       Schema.Attribute.Required &
       Schema.Attribute.SetMinMaxLength<{
-        maxLength: 32;
-        minLength: 6;
+        maxLength: 12;
+        minLength: 12;
       }>;
     publishedAt: Schema.Attribute.DateTime;
     requestType: Schema.Attribute.String &

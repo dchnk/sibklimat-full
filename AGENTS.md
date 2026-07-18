@@ -108,13 +108,15 @@ GET /
 ```text
 LandingContact
   -> POST Nuxt /api/leads
-     -> server validation + honeypot + in-memory IP rate limit
+     -> server validation + phone normalization + honeypot + in-memory IP rate limit
      -> best-effort POST Yandex SmartCaptcha /validate, если есть token/key
      -> server-to-server POST Strapi /api/leads с приватным API token
      -> optional Telegram Bot API sendMessage
 ```
 
 Не открывай публичный `Lead.create`: браузер должен видеть только Nuxt endpoint и публичный client key SmartCaptcha. `NUXT_STRAPI_API_TOKEN`, `NUXT_SMART_CAPTCHA_SERVER_KEY` и Telegram token остаются server-only. CAPTCHA намеренно fail-open: любая ошибка или отсутствие CAPTCHA не блокирует сохранение; результат сохраняется в `Lead.captchaStatus` как `passed`, `skipped`, `failed` или `unavailable`.
+
+Имя заявки ограничено 2–30 символами в UI, Nuxt API и Strapi schema. Телефонный input использует `maska` с отображением `+7 (###) ###-##-##`; Nuxt принимает российский номер с `7`, `8` или без кода страны и сохраняет только канонический формат `+7XXXXXXXXXX`.
 
 Разрешённые frontend mapper схемы ссылок: `#anchor`, относительный путь с одним начальным `/`, `http://`, `https://`, `tel:`, `mailto:`. `javascript:`, `data:` и protocol-relative `//...` отвергаются.
 
@@ -197,16 +199,15 @@ Frontend читает `url`, `alternativeText`, `width`, `height`, `name`, `mime
 - hero Dialog;
 - solution Tabs;
 - FAQ Accordion;
-- форма заявки с клиентской и серверной валидацией, обязательным согласием, best-effort SmartCaptcha, состояниями loading/success/error и записью в Strapi.
+- форма заявки с клиентской и серверной валидацией, маской и нормализацией российского телефона, обязательным согласием, best-effort SmartCaptcha, состояниями loading/success/error и записью в Strapi.
 
 ### Что frontend пока не делает
 
-- Нет маски телефона и отдельной проверки существования номера.
+- Нет отдельной проверки существования телефонного номера.
 - Текст согласия пока не содержит ссылки на утверждённую политику обработки персональных данных.
 - Hero «экспресс-подбор» открывает информационный Dialog, не отправляет расчёт.
 - UI выбора locale отсутствует.
 - Canonical/hreflang/sitemap/structured data отсутствуют.
-- Phone input остаётся обычным text без полноценной телефонной семантики.
 - Часть scaffold accessibility labels, например `Close`, остаётся статической.
 - Пакеты `swiper`, `zod`, `@vee-validate/zod` не используются прикладным кодом; не считай их доказательством реализованной формы.
 

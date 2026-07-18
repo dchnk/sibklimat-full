@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import type { Component } from 'vue'
+import { vMaska } from 'maska/vue'
 import { useI18n, useRuntimeConfig } from '#imports'
 import type {
   LandingContactChannelType,
@@ -83,6 +84,27 @@ const feedback = ref<{
 const smartCaptchaSiteKey = String(
   config.public.smartCaptchaSiteKey || ''
 ).trim()
+const normalizeRussianPhone = (value: string) => {
+  const digits = value.replace(/\D/g, '')
+  const nationalNumber =
+    digits.length === 10
+      ? digits
+      : digits.length === 11 && ['7', '8'].includes(digits[0] ?? '')
+        ? digits.slice(1)
+        : null
+
+  return nationalNumber ? `+7${nationalNumber}` : null
+}
+const phoneMaskOptions = {
+  mask: '+7 (###) ###-##-##',
+  preProcess: (value: string) => {
+    const digits = value.replace(/\D/g, '')
+
+    return digits.length === 11 && ['7', '8'].includes(digits[0] ?? '')
+      ? digits.slice(1)
+      : value
+  }
+}
 const captchaLocale = computed<'ru' | 'en'>(() =>
   locale.value === 'en' ? 'en' : 'ru'
 )
@@ -96,14 +118,13 @@ const isSubmitDisabled = computed(
 const validateForm = () => {
   const errors: Partial<Record<FormField, string>> = {}
   const normalizedName = name.value.trim()
-  const normalizedPhone = phone.value.trim()
-  const phoneDigitCount = normalizedPhone.replace(/\D/g, '').length
+  const normalizedPhone = normalizeRussianPhone(phone.value)
 
-  if (normalizedName.length < 2 || normalizedName.length > 100) {
+  if (normalizedName.length < 2 || normalizedName.length > 30) {
     errors.name = t('landing.contact.form.feedback.nameInvalid')
   }
 
-  if (phoneDigitCount < 7 || phoneDigitCount > 15) {
+  if (!normalizedPhone) {
     errors.phone = t('landing.contact.form.feedback.phoneInvalid')
   }
 
@@ -201,7 +222,7 @@ const handleSubmit = async () => {
       method: 'POST',
       body: {
         name: name.value,
-        phone: phone.value,
+        phone: normalizeRussianPhone(phone.value) ?? phone.value,
         requestType: requestType.value,
         details: details.value,
         agree: agree.value,
@@ -228,6 +249,12 @@ const handleSubmit = async () => {
     isSubmitting.value = false
   }
 }
+
+watch(name, (currentName) => {
+  if (currentName.length > 30) {
+    name.value = currentName.slice(0, 30)
+  }
+})
 
 watch(
   () => props.content.form.options.map((option) => option.value),
@@ -365,7 +392,7 @@ const contactIcons: Record<LandingContactChannelType, Component> = {
                   v-model="name"
                   name="name"
                   autocomplete="name"
-                  maxlength="100"
+                  maxlength="30"
                   required
                   :aria-invalid="Boolean(fieldErrors.name)"
                   :aria-describedby="fieldErrors.name ? 'landing-name-error' : undefined"
@@ -387,11 +414,12 @@ const contactIcons: Record<LandingContactChannelType, Component> = {
                 <Input
                   id="landing-phone"
                   v-model="phone"
+                  v-maska="phoneMaskOptions"
                   name="phone"
                   type="tel"
                   inputmode="tel"
                   autocomplete="tel"
-                  maxlength="32"
+                  maxlength="18"
                   required
                   :aria-invalid="Boolean(fieldErrors.phone)"
                   :aria-describedby="fieldErrors.phone ? 'landing-phone-error' : undefined"

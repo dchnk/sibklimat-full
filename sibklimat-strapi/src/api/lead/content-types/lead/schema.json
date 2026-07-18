@@ -16,13 +16,14 @@
       "type": "string",
       "required": true,
       "minLength": 2,
-      "maxLength": 100
+      "maxLength": 30
     },
     "phone": {
       "type": "string",
       "required": true,
-      "minLength": 6,
-      "maxLength": 32
+      "minLength": 12,
+      "maxLength": 12,
+      "regex": "^\\+7\\d{10}$"
     },
     "requestType": {
       "type": "string",

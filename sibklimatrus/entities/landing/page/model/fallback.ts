@@ -91,6 +91,14 @@ export const createLandingPageFallback = (t: Translate): LandingPageContent => (
     })),
     panelTitle: t('landing.hero.panel.title'),
     panelDescription: t('landing.hero.panel.description'),
+    panelImage: {
+      url: '/images/hero-hvac-interior.webp',
+      alternativeText: t('landing.hero.panel.imageAlt'),
+      name: 'hero-hvac-interior.webp',
+      mime: 'image/webp',
+      width: 1456,
+      height: 1088
+    },
     panelPlaceholderTitle: t('landing.hero.panel.mediaTitle'),
     panelPlaceholderDescription: t('landing.hero.panel.mediaDescription'),
     panelPoints: ['certified', 'transparent', 'support'].map((key) => ({

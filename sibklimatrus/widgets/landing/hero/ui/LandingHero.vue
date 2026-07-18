@@ -126,26 +126,14 @@ defineProps<{
         <CardContent class="space-y-4">
           <div class="landing-media-placeholder aspect-[4/3]">
             <img
-              v-if="content.panelImage?.url"
-              :src="content.panelImage.url"
-              :alt="content.panelImage.alternativeText ?? content.panelTitle"
-              :width="content.panelImage.width ?? 1200"
-              :height="content.panelImage.height ?? 900"
+              :src="content.panelImage?.url ?? '/images/hero-hvac-interior.webp'"
+              :alt="content.panelImage?.alternativeText ?? content.panelTitle"
+              :width="content.panelImage?.width ?? 1456"
+              :height="content.panelImage?.height ?? 1088"
               class="absolute inset-0 size-full object-cover"
               loading="eager"
               decoding="async"
             >
-            <div
-              v-else
-              class="landing-media-placeholder-inner"
-            >
-              <p class="text-sm font-medium">
-                {{ content.panelPlaceholderTitle }}
-              </p>
-              <p class="mt-1 text-xs text-muted-foreground">
-                {{ content.panelPlaceholderDescription }}
-              </p>
-            </div>
           </div>
 
           <Separator />

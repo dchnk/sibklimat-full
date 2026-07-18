@@ -57,6 +57,7 @@ export default {
         description: 'You see how the solution will work before the first mounting step.',
         mediaTitle: '3D visualization and route map',
         mediaDescription: 'Placeholders will be replaced by real renders and project photos.',
+        imageAlt: 'Wall-mounted air conditioner in a contemporary apartment interior',
         points: {
           certified: 'Certified installers and official equipment suppliers.',
           transparent: 'Transparent estimate with stage-by-stage payments.',

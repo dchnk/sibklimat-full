@@ -293,7 +293,7 @@ const contactIcons: Record<LandingContactChannelType, Component> = {
       </p>
     </div>
 
-    <div class="grid gap-4 lg:grid-cols-[0.92fr_1.08fr]">
+    <div class="grid grid-cols-1 gap-4 lg:grid-cols-[0.92fr_1.08fr]">
       <Card class="gap-4 border-border/75 bg-card/92 backdrop-blur-sm">
         <CardHeader class="space-y-3">
           <CardTitle class="text-xl">
@@ -382,7 +382,7 @@ const contactIcons: Record<LandingContactChannelType, Component> = {
               />
             </div>
 
-            <div class="grid gap-3 md:grid-cols-2">
+            <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
               <div class="space-y-2">
                 <Label for="landing-name">
                   {{ content.form.nameLabel }}

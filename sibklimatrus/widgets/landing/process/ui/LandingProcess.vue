@@ -34,7 +34,7 @@ defineProps<{
       </p>
     </div>
 
-    <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">
       <Card
         v-for="(step, index) in content.steps"
         :key="step.id"
@@ -61,7 +61,7 @@ defineProps<{
     </div>
 
     <Card class="mt-5 gap-3 border-border/75 bg-card/90">
-      <CardContent class="grid gap-4 p-6 md:grid-cols-3 md:items-center">
+      <CardContent class="grid grid-cols-1 gap-4 p-6 md:grid-cols-3 md:items-center">
         <div
           v-for="(metric, index) in content.metrics"
           :key="metric.id"

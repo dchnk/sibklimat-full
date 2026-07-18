@@ -27,7 +27,7 @@ defineProps<{
 
 <template>
   <section class="landing-section pb-10 pt-6 md:pt-10">
-    <div class="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-[1.15fr_0.85fr]">
       <div class="space-y-6">
         <Badge
           variant="secondary"
@@ -37,7 +37,7 @@ defineProps<{
         </Badge>
 
         <div class="space-y-4">
-          <h1 class="text-4xl font-semibold leading-tight md:text-6xl">
+          <h1 class="text-[clamp(1.5rem,8vw,2.25rem)] font-semibold leading-tight md:text-6xl">
             {{ content.title }}
           </h1>
 
@@ -94,7 +94,7 @@ defineProps<{
           </Dialog>
         </div>
 
-        <div class="grid gap-3 sm:grid-cols-3">
+        <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
           <Card
             v-for="kpi in content.kpis"
             :key="kpi.id"

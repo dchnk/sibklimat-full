@@ -1,0 +1,36 @@
+services:
+  strapi:
+    environment:
+      PUBLIC_URL: ${STRAPI_PUBLIC_URL:?Set STRAPI_PUBLIC_URL in .env.production}
+      IS_PROXIED: "true"
+      CORS_ORIGINS: ${STRAPI_CORS_ORIGINS:?Set STRAPI_CORS_ORIGINS in .env.production}
+
+  frontend:
+    environment:
+      NUXT_PUBLIC_SITE_URL: ${NUXT_PUBLIC_SITE_URL:?Set NUXT_PUBLIC_SITE_URL in .env.production}
+      NUXT_PUBLIC_SITE_INDEXABLE: "false"
+      NUXT_PUBLIC_STRAPI_URL: ${NUXT_PUBLIC_STRAPI_URL:?Set NUXT_PUBLIC_STRAPI_URL in .env.production}
+
+  caddy:
+    image: caddy:2.10.2-alpine
+    restart: unless-stopped
+    depends_on:
+      frontend:
+        condition: service_healthy
+      strapi:
+        condition: service_healthy
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      DEV_SITE_DOMAIN: ${DEV_SITE_DOMAIN:?Set DEV_SITE_DOMAIN in .env.production}
+      STRAPI_DOMAIN: ${STRAPI_DOMAIN:?Set STRAPI_DOMAIN in .env.production}
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  caddy_data:
+  caddy_config:

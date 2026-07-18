@@ -138,6 +138,8 @@ docker compose -f compose.dev.yaml start strapi
 
 ## Production compose
 
+Публичный серверный контур с Caddy, автоматическим TLS и запретом индексации dev-поддомена описан отдельно в `DEPLOY.md`. Он запускается через объединение `compose.yaml` и `compose.server.yaml`; production-секреты читаются только из игнорируемого `.env.production`.
+
 `compose.yaml` собирает оба приложения через Dockerfile:
 
 - `sibklimatrus/Dockerfile` - Nuxt production server;

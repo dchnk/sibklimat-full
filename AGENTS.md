@@ -2,7 +2,7 @@
 
 Этот файл предназначен для Codex и других инженерных агентов, которые начинают задачу без истории предыдущих сессий. Он фиксирует архитектуру, сквозные контракты и безопасные правила работы. Код, схемы Strapi, конфигурация и фактическое состояние окружения всегда имеют приоритет над этим снимком.
 
-Контекст обновлён 2026-07-18 на базе HEAD `19f5184` после добавления рабочей формы заявки, Yandex SmartCaptcha и Strapi mini-CRM. Если HEAD или схемы изменились, сначала перепроверь затронутые разделы.
+Контекст обновлён 2026-07-18 на базе HEAD `06e359a` после добавления рабочей формы заявки, Yandex SmartCaptcha, Strapi mini-CRM и hero image. Если HEAD или схемы изменились, сначала перепроверь затронутые разделы.
 
 ## Что сделать в начале любой задачи
 
@@ -292,12 +292,12 @@ Frontend types написаны вручную и не импортируют St
 
 ### Backend security/operations
 
-- Custom CORS/rate limiting нет; production defaults требуют отдельного hardening.
+- CORS ограничивается через `STRAPI_CORS_ORIGINS`; отдельного backend rate limiting нет, production defaults требуют дальнейшего hardening.
 - Users & Permissions установлен, хотя frontend accounts не использует; отключи ненужные auth endpoints/permissions.
-- `config/server.ts` читает `HOST`, `PORT`, `APP_KEYS`. Compose передаёт `PUBLIC_URL`, но `server.url` его не использует.
+- `config/server.ts` читает `HOST`, `PORT`, `APP_KEYS`, `PUBLIC_URL` и `IS_PROXIED`; за Caddy включай `STRAPI_IS_PROXIED=true`.
 - DB config содержит ветки SQLite/PostgreSQL/MySQL, но установлен только SQLite driver.
 - Backend TS: `strict: false`, CommonJS, target ES2019.
-- Reverse proxy, TLS, backup/restore, data transfer и zero-downtime migration в repo не настроены.
+- Reverse proxy/TLS настроены через server Compose и Caddy; есть ручной остановочный backup. Restore, off-host backup, data transfer automation и zero-downtime migration не настроены.
 
 ## Окружение и команды
 
@@ -326,6 +326,10 @@ Frontend types написаны вручную и не импортируют St
 | `npm run preview` | production-like `up -d --build` |
 | `npm run deploy` | то же production-like окружение |
 | `npm run preview:down` / `deploy:down` | down без удаления prod volumes |
+| `npm run server:config` | проверить объединённые production + Caddy Compose-файлы |
+| `npm run server:deploy` | собрать и запустить Strapi, dev-site и Caddy с `.env.production` |
+| `npm run server:backup` | остановочный backup production SQLite/uploads в `backups/` |
+| `npm run server:logs` / `server:down` | логи или остановка server-контура без удаления volumes |
 
 `preview` и `deploy` используют один Compose project и одни volumes. Dev и production также имеют одинаковые service names и host ports; не держи их одновременно без явной изоляции project/ports.
 
@@ -338,6 +342,7 @@ Frontend types написаны вручную и не импортируют St
 - Production-like SQLite volume: `strapi_data`; uploads: `strapi_uploads`.
 - Данные между этими средами не переносятся автоматически.
 - Root `.env` используется Compose interpolation; child `sibklimat-strapi/.env` — direct host Strapi.
+- Публичный server-контур читает игнорируемый `.env.production`; отслеживается только `.env.production.example`.
 - Dev frontend дополнительно читает опциональный игнорируемый `.env.dev.local`; сейчас там хранится dev-only `NUXT_STRAPI_API_TOKEN`. Production Compose этот файл не читает и требует отдельный production token.
 - На Windows копируй example через `Copy-Item .env.example .env`.
 
@@ -346,7 +351,10 @@ Frontend types написаны вручную и не импортируют St
 - `NUXT_STRAPI_URL` — server-side/internal Strapi;
 - `NUXT_PUBLIC_STRAPI_URL` — browser/media base;
 - `NUXT_PUBLIC_SITE_URL` — объявлен, пока не используется;
-- `STRAPI_PUBLIC_URL` передаётся как `PUBLIC_URL`, но пока не подключён к `server.url`.
+- `NUXT_PUBLIC_SITE_INDEXABLE` — явный opt-in индексации; безопасное значение по умолчанию `false`;
+- `STRAPI_PUBLIC_URL` передаётся как `PUBLIC_URL` и используется `server.url`;
+- `STRAPI_IS_PROXIED` включает доверие Koa к proxy-заголовкам и нужен за Caddy;
+- `STRAPI_CORS_ORIGINS` задаёт разрешённые frontend origins.
 
 Переменные формы:
 
@@ -432,16 +440,26 @@ npm run build
 4. Для production нужны утверждённая политика и текст согласия, сроки хранения и удаления лидов; текущий checkbox содержит только общий текст без ссылки.
 5. Демо-контакты, KPI, гарантии и бизнес-утверждения требуют подтверждения.
 6. Нет lint/typecheck/tests/CI и автоматического schema↔frontend contract test.
-7. Нет healthchecks, rate limiting, backup/restore и migration workflow.
+7. Есть container healthchecks и ручной остановочный `server:backup`, но нет scheduled/off-host backup, проверенного restore, внешнего monitoring и migration workflow.
 8. Preview и deploy — одна среда с общими volumes.
 9. SQLite подходит только для небольшого single instance.
 10. Нет locale switch UI и полного SEO pipeline.
-11. `NUXT_PUBLIC_SITE_URL` и `STRAPI_PUBLIC_URL` не дают ожидаемого эффекта.
-12. Frontend `.dockerignore` не исключал `.env`; не создавай frontend env-файл без проверки build context.
-13. Tailwind custom classes/duplicated dev stylesheet требуют production-проверки.
-14. CMS fetch имеет timeout, но не имеет retry, observable error или monitoring; fallback скрывает причину.
-15. После открытия Public `find` проверь anonymous `?status=draft`.
-16. Полностью заполненная секция обязательна для принятия CMS mapper; одна невалидная nested запись включает fallback всей секции.
-17. Управления скрытием/перестановкой top-level секций через CMS пока нет.
-18. Rate limit формы хранится в памяти одного Nuxt-процесса и не координируется между репликами.
-19. Доставка Telegram best-effort: сбой уведомления не откатывает сохранённый в Strapi лид.
+11. `STRAPI_PUBLIC_URL` подключён к `server.url`; `NUXT_PUBLIC_SITE_URL` всё ещё не используется для canonical/hreflang/sitemap.
+12. Tailwind custom classes/duplicated dev stylesheet требуют production-проверки.
+13. CMS fetch имеет timeout, но не имеет retry, observable error или monitoring; fallback скрывает причину.
+14. После открытия Public `find` проверь anonymous `?status=draft`.
+15. Полностью заполненная секция обязательна для принятия CMS mapper; одна невалидная nested запись включает fallback всей секции.
+16. Управления скрытием/перестановкой top-level секций через CMS пока нет.
+17. Rate limit формы хранится в памяти одного Nuxt-процесса и не координируется между репликами.
+18. Доставка Telegram best-effort: сбой уведомления не откатывает сохранённый в Strapi лид.
+
+## Серверный контур
+
+- `compose.server.yaml` добавляет Caddy к production-сервисам из `compose.yaml`; точный runbook находится в `DEPLOY.md`.
+- Caddy публикует только 80/443. Диагностические порты Nuxt и Strapi по умолчанию привязаны к `127.0.0.1`.
+- Production secrets и домены хранятся в игнорируемом `.env.production`; отслеживается только `.env.production.example`.
+- Server Compose принудительно задаёт dev-поддомену `NUXT_PUBLIC_SITE_INDEXABLE=false`. Запрет индексации реализован через динамический `robots.txt`, meta robots и `X-Robots-Tag`; Caddy дублирует заголовок.
+- Strapi всегда закрывает индексацию через собственный `public/robots.txt` и внешний `X-Robots-Tag`.
+- `PUBLIC_URL` теперь подключён к `config/server.ts`; за Caddy требуется `STRAPI_IS_PROXIED=true`.
+- `STRAPI_CORS_ORIGINS` должен перечислять реальные frontend origins, а не оставаться wildcard.
+- `npm run server:backup` останавливает только Strapi, копирует SQLite/uploads в игнорируемый `backups/` и гарантированно пытается запустить сервис снова; off-host ротацию и restore всё равно нужно настроить отдельно.

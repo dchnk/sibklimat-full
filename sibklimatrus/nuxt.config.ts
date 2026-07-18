@@ -27,6 +27,7 @@ export default defineNuxtConfig({
     ),
     public: {
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000',
+      siteIndexable: process.env.NUXT_PUBLIC_SITE_INDEXABLE === 'true',
       strapiUrl: process.env.NUXT_PUBLIC_STRAPI_URL || 'http://localhost:1337',
       smartCaptchaSiteKey:
         process.env.NUXT_PUBLIC_SMART_CAPTCHA_SITE_KEY || ''

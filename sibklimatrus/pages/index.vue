@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useHead, useI18n, useSeoMeta } from '#imports'
+import { useHead, useI18n, useRuntimeConfig, useSeoMeta } from '#imports'
 import { useLandingPage } from '@/entities/landing/page'
 import { LandingContact } from '@/widgets/landing/contact'
 import { LandingFaq } from '@/widgets/landing/faq'
@@ -11,7 +11,11 @@ import { LandingServices } from '@/widgets/landing/services'
 import { LandingSolutions } from '@/widgets/landing/solutions'
 
 const { locale } = useI18n()
+const runtimeConfig = useRuntimeConfig()
 const { content } = useLandingPage()
+const robotsPolicy = runtimeConfig.public.siteIndexable
+  ? 'index, follow'
+  : 'noindex, nofollow, noarchive, nosnippet, noimageindex'
 
 useSeoMeta({
   title: () => content.value.seo.metaTitle,
@@ -26,7 +30,9 @@ useSeoMeta({
   twitterTitle: () => content.value.seo.metaTitle,
   twitterDescription: () => content.value.seo.metaDescription,
   twitterImage: () => content.value.seo.shareImage?.url,
-  twitterImageAlt: () => content.value.seo.shareImage?.alternativeText
+  twitterImageAlt: () => content.value.seo.shareImage?.alternativeText,
+  robots: robotsPolicy,
+  googlebot: robotsPolicy
 })
 
 useHead(() => ({

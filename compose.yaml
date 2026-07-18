@@ -3,14 +3,19 @@ services:
     build:
       context: ./sibklimat-strapi
       dockerfile: Dockerfile
+      args:
+        PUBLIC_URL: ${STRAPI_PUBLIC_URL:-http://localhost:1337}
     restart: unless-stopped
+    init: true
     ports:
-      - "1337:1337"
+      - "${STRAPI_BIND_ADDRESS:-127.0.0.1}:${STRAPI_HOST_PORT:-1337}:1337"
     environment:
       NODE_ENV: production
       HOST: 0.0.0.0
       PORT: 1337
       PUBLIC_URL: ${STRAPI_PUBLIC_URL:-http://localhost:1337}
+      IS_PROXIED: ${STRAPI_IS_PROXIED:-false}
+      CORS_ORIGINS: ${STRAPI_CORS_ORIGINS:-http://localhost:3000}
       DATABASE_CLIENT: sqlite
       DATABASE_FILENAME: .tmp/data.db
       APP_KEYS: ${STRAPI_APP_KEYS}
@@ -22,21 +27,34 @@ services:
     volumes:
       - strapi_data:/app/.tmp
       - strapi_uploads:/app/public/uploads
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - fetch('http://127.0.0.1:1337/_health').then(r=>process.exit(r.status===204?0:1)).catch(()=>process.exit(1))
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
 
   frontend:
     build:
       context: ./sibklimatrus
       dockerfile: Dockerfile
     restart: unless-stopped
+    init: true
     depends_on:
-      - strapi
+      strapi:
+        condition: service_healthy
     ports:
-      - "3000:3000"
+      - "${FRONTEND_BIND_ADDRESS:-127.0.0.1}:${FRONTEND_HOST_PORT:-3000}:3000"
     environment:
       NODE_ENV: production
       NITRO_HOST: 0.0.0.0
       NITRO_PORT: 3000
       NUXT_PUBLIC_SITE_URL: ${NUXT_PUBLIC_SITE_URL:-http://localhost:3000}
+      NUXT_PUBLIC_SITE_INDEXABLE: ${NUXT_PUBLIC_SITE_INDEXABLE:-false}
       NUXT_STRAPI_URL: ${NUXT_STRAPI_URL:-http://strapi:1337}
       NUXT_PUBLIC_STRAPI_URL: ${NUXT_PUBLIC_STRAPI_URL:-http://localhost:1337}
       NUXT_STRAPI_API_TOKEN: ${NUXT_STRAPI_API_TOKEN}
@@ -46,6 +64,16 @@ services:
       NUXT_TELEGRAM_CHAT_ID: ${NUXT_TELEGRAM_CHAT_ID:-}
       NUXT_LEAD_RATE_LIMIT_MAX: ${NUXT_LEAD_RATE_LIMIT_MAX:-5}
       NUXT_LEAD_RATE_LIMIT_WINDOW_MS: ${NUXT_LEAD_RATE_LIMIT_WINDOW_MS:-600000}
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - fetch('http://127.0.0.1:3000/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
 volumes:
   strapi_data:

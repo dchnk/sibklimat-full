@@ -515,6 +515,107 @@ export interface ApiHomepageHomepage extends Struct.SingleTypeSchema {
   };
 }
 
+export interface ApiLeadLead extends Struct.CollectionTypeSchema {
+  collectionName: 'leads';
+  info: {
+    description: 'Requests submitted through the public website contact form';
+    displayName: 'Lead';
+    pluralName: 'leads';
+    singularName: 'lead';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    captchaStatus: Schema.Attribute.Enumeration<
+      ['passed', 'skipped', 'failed', 'unavailable']
+    > &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'skipped'>;
+    consent: Schema.Attribute.Boolean &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<true>;
+    consentAt: Schema.Attribute.DateTime & Schema.Attribute.Required;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    details: Schema.Attribute.Text &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 2000;
+      }>;
+    formLocale: Schema.Attribute.Enumeration<['ru', 'en']> &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'ru'>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::lead.lead'> &
+      Schema.Attribute.Private;
+    manager: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 100;
+      }>;
+    managerNote: Schema.Attribute.Text &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 5000;
+      }>;
+    name: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 100;
+        minLength: 2;
+      }>;
+    pageUrl: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 2048;
+      }>;
+    phone: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 32;
+        minLength: 6;
+      }>;
+    publishedAt: Schema.Attribute.DateTime;
+    requestType: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 80;
+      }>;
+    source: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 100;
+      }> &
+      Schema.Attribute.DefaultTo<'website'>;
+    status: Schema.Attribute.Enumeration<
+      ['new', 'in_progress', 'completed', 'spam']
+    > &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'new'>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    utmCampaign: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 255;
+      }>;
+    utmContent: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 255;
+      }>;
+    utmMedium: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 255;
+      }>;
+    utmSource: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 255;
+      }>;
+    utmTerm: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 255;
+      }>;
+  };
+}
+
 export interface PluginContentReleasesRelease
   extends Struct.CollectionTypeSchema {
   collectionName: 'strapi_releases';
@@ -1026,6 +1127,7 @@ declare module '@strapi/strapi' {
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
       'api::homepage.homepage': ApiHomepageHomepage;
+      'api::lead.lead': ApiLeadLead;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;

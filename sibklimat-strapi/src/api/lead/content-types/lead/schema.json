@@ -1,0 +1,115 @@
+{
+  "kind": "collectionType",
+  "collectionName": "leads",
+  "info": {
+    "singularName": "lead",
+    "pluralName": "leads",
+    "displayName": "Lead",
+    "description": "Requests submitted through the public website contact form"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true,
+      "minLength": 2,
+      "maxLength": 100
+    },
+    "phone": {
+      "type": "string",
+      "required": true,
+      "minLength": 6,
+      "maxLength": 32
+    },
+    "requestType": {
+      "type": "string",
+      "required": true,
+      "maxLength": 80
+    },
+    "details": {
+      "type": "text",
+      "maxLength": 2000
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "new",
+        "in_progress",
+        "completed",
+        "spam"
+      ],
+      "required": true,
+      "default": "new"
+    },
+    "manager": {
+      "type": "string",
+      "maxLength": 100
+    },
+    "managerNote": {
+      "type": "text",
+      "maxLength": 5000
+    },
+    "source": {
+      "type": "string",
+      "required": true,
+      "maxLength": 100,
+      "default": "website"
+    },
+    "formLocale": {
+      "type": "enumeration",
+      "enum": [
+        "ru",
+        "en"
+      ],
+      "required": true,
+      "default": "ru"
+    },
+    "pageUrl": {
+      "type": "string",
+      "maxLength": 2048
+    },
+    "utmSource": {
+      "type": "string",
+      "maxLength": 255
+    },
+    "utmMedium": {
+      "type": "string",
+      "maxLength": 255
+    },
+    "utmCampaign": {
+      "type": "string",
+      "maxLength": 255
+    },
+    "utmContent": {
+      "type": "string",
+      "maxLength": 255
+    },
+    "utmTerm": {
+      "type": "string",
+      "maxLength": 255
+    },
+    "consent": {
+      "type": "boolean",
+      "required": true,
+      "default": true
+    },
+    "consentAt": {
+      "type": "datetime",
+      "required": true
+    },
+    "captchaStatus": {
+      "type": "enumeration",
+      "enum": [
+        "passed",
+        "skipped",
+        "failed",
+        "unavailable"
+      ],
+      "required": true,
+      "default": "skipped"
+    }
+  }
+}

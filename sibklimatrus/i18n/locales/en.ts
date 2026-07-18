@@ -314,7 +314,20 @@ export default {
           service: 'Service and diagnostics'
         },
         agreement: 'I agree to personal data processing and communication regarding this request.',
-        submit: 'Send request'
+        submit: 'Send request',
+        feedback: {
+          nameInvalid: 'Enter a name between 2 and 100 characters.',
+          phoneInvalid: 'Enter a valid phone number.',
+          requestTypeInvalid: 'Choose a request type.',
+          agreementRequired: 'Confirm your consent to personal data processing.',
+          captchaRequired: 'Confirm that you are not a robot.',
+          captchaLoading: 'Loading the security check…',
+          validationError: 'Check the required fields.',
+          rateLimited: 'Too many attempts. Please try again a little later.',
+          submitError: 'We could not send your request. Try again or contact us by phone.',
+          submitting: 'Sending…',
+          success: 'Your request has been sent. We will contact you shortly.'
+        }
       }
     },
     footer: {

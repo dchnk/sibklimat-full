@@ -2,7 +2,7 @@
 
 Этот файл предназначен для Codex и других инженерных агентов, которые начинают задачу без истории предыдущих сессий. Он фиксирует архитектуру, сквозные контракты и безопасные правила работы. Код, схемы Strapi, конфигурация и фактическое состояние окружения всегда имеют приоритет над этим снимком.
 
-Контекст обновлён 2026-07-14 после перевода всей страницы на управляемый из Strapi контент и коммита `96d9f27` (`96d9f275fa6ef49a0fbda9e105c748216bc7950e`). Если HEAD или схемы изменились, сначала перепроверь затронутые разделы.
+Контекст обновлён 2026-07-18 на базе HEAD `19f5184` после добавления рабочей формы заявки, Yandex SmartCaptcha и Strapi mini-CRM. Если HEAD или схемы изменились, сначала перепроверь затронутые разделы.
 
 ## Что сделать в начале любой задачи
 
@@ -23,7 +23,7 @@ SibKlimat — двуязычный корпоративный SSR-лендинг
 - одна адаптивная Nuxt-страница `/`, RU/EN, светлая/тёмная тема;
 - весь маркетинговый текст, ссылки, повторяемые карточки, изображения и SEO-макет страницы могут поступать из Strapi;
 - словари `ru.ts` и `en.ts` сохранены как безопасный локализованный fallback;
-- форма заявки управляется CMS только на уровне подписей и вариантов, но данные никуда не отправляет;
+- форма заявки отправляет данные через Nuxt server API и сохраняет лиды в Strapi; Yandex SmartCaptcha и Telegram-уведомление опциональны и не должны блокировать приём лида;
 - без заполненного/опубликованного CMS-документа страница остаётся визуально рабочей благодаря fallback, поэтому внешний вид сам по себе не доказывает доступность Strapi;
 - реальные контакты, адрес, KPI, гарантии, изображения и маркетинговые утверждения нужно подтвердить до production.
 
@@ -102,6 +102,19 @@ GET /
 - невалидный enum, media, href или обязательная строка откатывает всю соответствующую секцию;
 - CMS `seo` независим и опционален, но domain `seo` всегда заполнен локализованным fallback, чтобы динамический head не удалял meta description при недоступной CMS;
 - сетевые/permission/timeout ошибки превращаются в `payload: null`; причина сейчас не выводится в UI и не логируется.
+
+Поток заявки независим от чтения Homepage:
+
+```text
+LandingContact
+  -> POST Nuxt /api/leads
+     -> server validation + honeypot + in-memory IP rate limit
+     -> best-effort POST Yandex SmartCaptcha /validate, если есть token/key
+     -> server-to-server POST Strapi /api/leads с приватным API token
+     -> optional Telegram Bot API sendMessage
+```
+
+Не открывай публичный `Lead.create`: браузер должен видеть только Nuxt endpoint и публичный client key SmartCaptcha. `NUXT_STRAPI_API_TOKEN`, `NUXT_SMART_CAPTCHA_SERVER_KEY` и Telegram token остаются server-only. CAPTCHA намеренно fail-open: любая ошибка или отсутствие CAPTCHA не блокирует сохранение; результат сохраняется в `Lead.captchaStatus` как `passed`, `skipped`, `failed` или `unavailable`.
 
 Разрешённые frontend mapper схемы ссылок: `#anchor`, относительный путь с одним начальным `/`, `http://`, `https://`, `tel:`, `mailto:`. `javascript:`, `data:` и protocol-relative `//...` отвергаются.
 
@@ -184,12 +197,12 @@ Frontend читает `url`, `alternativeText`, `width`, `height`, `name`, `mime
 - hero Dialog;
 - solution Tabs;
 - FAQ Accordion;
-- локальное управление Input/Select/Textarea/Checkbox.
+- форма заявки с клиентской и серверной валидацией, обязательным согласием, best-effort SmartCaptcha, состояниями loading/success/error и записью в Strapi.
 
 ### Что frontend пока не делает
 
-- Contact блок не имеет реального submit/API/validation/loading/success/error/anti-spam.
-- Consent checkbox не блокирует кнопку.
+- Нет маски телефона и отдельной проверки существования номера.
+- Текст согласия пока не содержит ссылки на утверждённую политику обработки персональных данных.
 - Hero «экспресс-подбор» открывает информационный Dialog, не отправляет расчёт.
 - UI выбора locale отсутствует.
 - Canonical/hreflang/sitemap/structured data отсутствуют.
@@ -203,7 +216,7 @@ Frontend читает `url`, `alternativeText`, `width`, `height`, `name`, `mime
 
 - Strapi 5.33.2, Users & Permissions 5.33.2.
 - SQLite через `better-sqlite3` 12.4.1.
-- Один локализованный single type `Homepage`, Draft & Publish включён.
+- Локализованный single type `Homepage` с Draft & Publish и нелокализованный collection type `Lead` без Draft & Publish.
 - 20 component schemas: 14 landing, 3 layout, 3 shared.
 - Стандартные core controller/router/service; нет custom policies, lifecycle hooks, jobs, автоматического seed/bootstrap, migrations или tests. Есть только явно запускаемый одноразовый импорт русского fallback-контента через `sibklimatrus/scripts/export-homepage-ru.mjs` и `sibklimat-strapi/scripts/import-homepage-ru.mjs`.
 - `src/index.ts` содержит пустые `register()` и `bootstrap()`.
@@ -248,6 +261,8 @@ Core single-type routes:
 - `GET /api/homepage`;
 - `PUT /api/homepage`;
 - `DELETE /api/homepage`.
+
+Core collection routes `Lead` существуют, но публичные permissions должны быть закрыты. Nuxt использует только `POST /api/leads` по custom API token с разрешением `Lead.create`; чтение и изменение лидов выполняются менеджером в Strapi admin.
 
 Frontend не отправляет токен. Для CMS-контента нужна Public permission → Homepage → `find`. Обычный GET читает опубликованную версию. После открытия permission отдельно проверь `?status=draft`; если anonymous drafts недопустимы, закрой сценарий custom policy/route.
 
@@ -322,6 +337,7 @@ Frontend types написаны вручную и не импортируют St
 - Production-like SQLite volume: `strapi_data`; uploads: `strapi_uploads`.
 - Данные между этими средами не переносятся автоматически.
 - Root `.env` используется Compose interpolation; child `sibklimat-strapi/.env` — direct host Strapi.
+- Dev frontend дополнительно читает опциональный игнорируемый `.env.dev.local`; сейчас там хранится dev-only `NUXT_STRAPI_API_TOKEN`. Production Compose этот файл не читает и требует отдельный production token.
 - На Windows копируй example через `Copy-Item .env.example .env`.
 
 Сетевые переменные:
@@ -330,6 +346,14 @@ Frontend types написаны вручную и не импортируют St
 - `NUXT_PUBLIC_STRAPI_URL` — browser/media base;
 - `NUXT_PUBLIC_SITE_URL` — объявлен, пока не используется;
 - `STRAPI_PUBLIC_URL` передаётся как `PUBLIC_URL`, но пока не подключён к `server.url`.
+
+Переменные формы:
+
+- `NUXT_STRAPI_API_TOKEN` — server-only custom Strapi token с `Lead.create`;
+- `NUXT_PUBLIC_SMART_CAPTCHA_SITE_KEY` — опциональный публичный client key Yandex SmartCaptcha;
+- `NUXT_SMART_CAPTCHA_SERVER_KEY` — опциональный server-only key проверки CAPTCHA;
+- `NUXT_TELEGRAM_BOT_TOKEN`/`NUXT_TELEGRAM_CHAT_ID` — опциональное уведомление;
+- `NUXT_LEAD_RATE_LIMIT_MAX`/`NUXT_LEAD_RATE_LIMIT_WINDOW_MS` — in-memory лимит одного Nuxt instance.
 
 Root Compose secrets:
 
@@ -404,7 +428,7 @@ npm run build
 1. Compose secrets являются placeholders, нужна генерация/ротация.
 2. Полный CMS state всё ещё невоспроизводим: есть импорт только русского текстового fallback, но нет автоматизации admin, locales, permissions, media и общего export/import между средами.
 3. Dev/prod/host БД и uploads раздельны.
-4. Contact form ничего не отправляет и не валидирует персональные данные.
+4. Для production нужны утверждённая политика и текст согласия, сроки хранения и удаления лидов; текущий checkbox содержит только общий текст без ссылки.
 5. Демо-контакты, KPI, гарантии и бизнес-утверждения требуют подтверждения.
 6. Нет lint/typecheck/tests/CI и автоматического schema↔frontend contract test.
 7. Нет healthchecks, rate limiting, backup/restore и migration workflow.
@@ -418,3 +442,5 @@ npm run build
 15. После открытия Public `find` проверь anonymous `?status=draft`.
 16. Полностью заполненная секция обязательна для принятия CMS mapper; одна невалидная nested запись включает fallback всей секции.
 17. Управления скрытием/перестановкой top-level секций через CMS пока нет.
+18. Rate limit формы хранится в памяти одного Nuxt-процесса и не координируется между репликами.
+19. Доставка Telegram best-effort: сбой уведомления не откатывает сохранённый в Strapi лид.

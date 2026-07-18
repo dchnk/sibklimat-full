@@ -57,6 +57,16 @@ npm run deploy:down    # остановить production compose
 - `NUXT_STRAPI_URL` - внутренний URL для Nuxt-сервера, в Docker обычно `http://strapi:1337`;
 - `NUXT_PUBLIC_STRAPI_URL` - внешний URL для браузера, локально `http://localhost:1337`, на сервере публичный домен API.
 
+Рабочая форма заявки использует дополнительные переменные:
+
+- `NUXT_STRAPI_API_TOKEN` - приватный Strapi API token с единственным разрешением `Lead.create`;
+- `NUXT_PUBLIC_SMART_CAPTCHA_SITE_KEY` - опциональный публичный клиентский ключ Yandex SmartCaptcha;
+- `NUXT_SMART_CAPTCHA_SERVER_KEY` - опциональный приватный серверный ключ Yandex SmartCaptcha;
+- `NUXT_TELEGRAM_BOT_TOKEN` и `NUXT_TELEGRAM_CHAT_ID` - опциональное уведомление о новой заявке;
+- `NUXT_LEAD_RATE_LIMIT_MAX` и `NUXT_LEAD_RATE_LIMIT_WINDOW_MS` - лимит попыток с одного IP, по умолчанию 5 запросов за 10 минут.
+
+Серверные ключи и API token нельзя добавлять в `runtimeConfig.public`, логи или Git. Dev Compose читает server-only токен формы из игнорируемого `.env.dev.local`; production Compose этот файл не использует.
+
 Для деплоя обязательно поменять секреты Strapi в `.env`:
 
 - `STRAPI_APP_KEYS`
@@ -94,6 +104,22 @@ npm run deploy:down    # остановить production compose
 6. Проверить реальный JSON API и изображения: визуально корректная страница может быть fallback, если CMS не настроена.
 
 Автоматического seed/bootstrap для Homepage пока нет: локали, admin и permission на чистом volume настраиваются вручную. Для русского текстового контента есть явно запускаемый импорт ниже. Dev и production используют разные volumes, поэтому контент между ними автоматически не переносится.
+
+## Форма заявки и мини-CRM
+
+Форма отправляет JSON в Nuxt `POST /api/leads`. Nuxt проверяет размер и формат запроса, поля, согласие, honeypot и лимит по IP. Yandex SmartCaptcha работает в best-effort режиме: когда виджет успешно загрузился, UI просит пройти проверку; при отсутствии ключа, ошибке загрузки/сети или любой ошибке server-side проверки CAPTCHA скрывается или пропускается, а заявка всё равно сохраняется. Браузер не получает Strapi API token и не отправляет заявку напрямую в CMS.
+
+`Lead` хранит имя, телефон, тип и описание заявки, locale, страницу и UTM-метки, дату согласия и диагностический `captchaStatus`: `passed`, `skipped`, `failed` или `unavailable`. В Strapi Content Manager менеджер меняет статус `new`, `in_progress`, `completed` или `spam`, указывает ответственного и внутреннюю заметку. Публичные permissions для `Lead` должны оставаться закрытыми.
+
+Настройка на новой среде:
+
+1. Опционально создать SmartCaptcha в Yandex Cloud, добавить публичный домен сайта в разрешённые и записать клиентский/серверный ключи в root `.env`. Без ключей форма продолжает работать без CAPTCHA.
+2. В Strapi открыть Settings → API Tokens и создать Custom token только с разрешением `Lead.create`. Для dev записать показанное значение как `NUXT_STRAPI_API_TOKEN` в игнорируемый `.env.dev.local`; production token создаётся отдельно и хранится в production secrets/root `.env`.
+3. Опционально создать Telegram-бота, добавить его в нужный чат и заполнить `NUXT_TELEGRAM_BOT_TOKEN`/`NUXT_TELEGRAM_CHAT_ID`. Ошибка Telegram не отменяет уже сохранённую заявку.
+4. Перезапустить frontend-контейнер, потому что runtime config читается при запуске Nuxt.
+5. Отправить реальную тестовую заявку, проверить новую запись в Content Manager и уведомление. После теста удалить запись или пометить её `spam`.
+
+Rate limit хранится в памяти Nuxt-процесса. Это соответствует текущему single-instance MVP, но для нескольких реплик его нужно перенести в общее хранилище. Перед production также нужны утверждённые тексты согласия и политики обработки персональных данных, сроки хранения и порядок удаления заявок.
 
 ### Одноразовый импорт русского текста
 

@@ -17,9 +17,19 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     strapiUrl: process.env.NUXT_STRAPI_URL || 'http://localhost:1337',
+    strapiApiToken: process.env.NUXT_STRAPI_API_TOKEN || '',
+    smartCaptchaServerKey: process.env.NUXT_SMART_CAPTCHA_SERVER_KEY || '',
+    telegramBotToken: process.env.NUXT_TELEGRAM_BOT_TOKEN || '',
+    telegramChatId: process.env.NUXT_TELEGRAM_CHAT_ID || '',
+    leadRateLimitMax: Number(process.env.NUXT_LEAD_RATE_LIMIT_MAX || 5),
+    leadRateLimitWindowMs: Number(
+      process.env.NUXT_LEAD_RATE_LIMIT_WINDOW_MS || 600000
+    ),
     public: {
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000',
-      strapiUrl: process.env.NUXT_PUBLIC_STRAPI_URL || 'http://localhost:1337'
+      strapiUrl: process.env.NUXT_PUBLIC_STRAPI_URL || 'http://localhost:1337',
+      smartCaptchaSiteKey:
+        process.env.NUXT_PUBLIC_SMART_CAPTCHA_SITE_KEY || ''
     }
   },
   shadcn: {

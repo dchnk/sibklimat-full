@@ -362,6 +362,7 @@ Frontend types написаны вручную и не импортируют St
 - `NUXT_PUBLIC_SMART_CAPTCHA_SITE_KEY` — опциональный публичный client key Yandex SmartCaptcha;
 - `NUXT_SMART_CAPTCHA_SERVER_KEY` — опциональный server-only key проверки CAPTCHA;
 - `NUXT_TELEGRAM_BOT_TOKEN`/`NUXT_TELEGRAM_CHAT_ID` — опциональное уведомление;
+- `NUXT_USE_ENV_PROXY=1`/`NUXT_HTTPS_PROXY`/`NUXT_NO_PROXY` — опциональный HTTPS-proxy для server-side `fetch`; internal Strapi и SmartCaptcha должны обходить его;
 - `NUXT_LEAD_RATE_LIMIT_MAX`/`NUXT_LEAD_RATE_LIMIT_WINDOW_MS` — in-memory лимит одного Nuxt instance.
 
 Root Compose secrets:

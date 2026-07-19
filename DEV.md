@@ -63,6 +63,7 @@ npm run deploy:down    # остановить production compose
 - `NUXT_PUBLIC_SMART_CAPTCHA_SITE_KEY` - опциональный публичный клиентский ключ Yandex SmartCaptcha;
 - `NUXT_SMART_CAPTCHA_SERVER_KEY` - опциональный приватный серверный ключ Yandex SmartCaptcha;
 - `NUXT_TELEGRAM_BOT_TOKEN` и `NUXT_TELEGRAM_CHAT_ID` - опциональное уведомление о новой заявке;
+- `NUXT_USE_ENV_PROXY=1`, `NUXT_HTTPS_PROXY` и `NUXT_NO_PROXY` - опциональный HTTPS-proxy для server-side `fetch`; internal Strapi и SmartCaptcha должны оставаться в `NUXT_NO_PROXY`;
 - `NUXT_LEAD_RATE_LIMIT_MAX` и `NUXT_LEAD_RATE_LIMIT_WINDOW_MS` - лимит попыток с одного IP, по умолчанию 5 запросов за 10 минут.
 
 Серверные ключи и API token нельзя добавлять в `runtimeConfig.public`, логи или Git. Dev Compose читает server-only токен формы из игнорируемого `.env.dev.local`; production Compose этот файл не использует.

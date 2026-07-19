@@ -34,7 +34,7 @@
       "type": "text",
       "maxLength": 2000
     },
-    "status": {
+    "leadStatus": {
       "type": "enumeration",
       "enum": [
         "new",

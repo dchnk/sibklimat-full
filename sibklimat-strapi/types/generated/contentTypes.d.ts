@@ -546,6 +546,11 @@ export interface ApiLeadLead extends Struct.CollectionTypeSchema {
     formLocale: Schema.Attribute.Enumeration<['ru', 'en']> &
       Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<'ru'>;
+    leadStatus: Schema.Attribute.Enumeration<
+      ['new', 'in_progress', 'completed', 'spam']
+    > &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'new'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::lead.lead'> &
       Schema.Attribute.Private;
@@ -585,11 +590,6 @@ export interface ApiLeadLead extends Struct.CollectionTypeSchema {
         maxLength: 100;
       }> &
       Schema.Attribute.DefaultTo<'website'>;
-    status: Schema.Attribute.Enumeration<
-      ['new', 'in_progress', 'completed', 'spam']
-    > &
-      Schema.Attribute.Required &
-      Schema.Attribute.DefaultTo<'new'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

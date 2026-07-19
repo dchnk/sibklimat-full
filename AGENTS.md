@@ -114,7 +114,7 @@ LandingContact
      -> optional Telegram Bot API sendMessage
 ```
 
-Не открывай публичный `Lead.create`: браузер должен видеть только Nuxt endpoint и публичный client key SmartCaptcha. `NUXT_STRAPI_API_TOKEN`, `NUXT_SMART_CAPTCHA_SERVER_KEY` и Telegram token остаются server-only. CAPTCHA намеренно fail-open: любая ошибка или отсутствие CAPTCHA не блокирует сохранение; результат сохраняется в `Lead.captchaStatus` как `passed`, `skipped`, `failed` или `unavailable`.
+Не открывай публичный `Lead.create`: браузер должен видеть только Nuxt endpoint и публичный client key SmartCaptcha. `NUXT_STRAPI_API_TOKEN`, `NUXT_SMART_CAPTCHA_SERVER_KEY` и Telegram token остаются server-only. CAPTCHA намеренно fail-open: любая ошибка или отсутствие CAPTCHA не блокирует сохранение; результат сохраняется в `Lead.captchaStatus` как `passed`, `skipped`, `failed` или `unavailable`. Статус обработки заявки хранится в `Lead.leadStatus`; имя `status` не используй, потому что Strapi 5 трактует его как системный document status (`draft`/`published`) в Content Manager.
 
 Имя заявки ограничено 2–30 символами в UI, Nuxt API и Strapi schema. Телефонный input использует `maska` с отображением `+7 (###) ###-##-##`; Nuxt принимает российский номер с `7`, `8` или без кода страны и сохраняет только канонический формат `+7XXXXXXXXXX`.
 
@@ -219,7 +219,7 @@ Frontend читает `url`, `alternativeText`, `width`, `height`, `name`, `mime
 - SQLite через `better-sqlite3` 12.4.1.
 - Локализованный single type `Homepage` с Draft & Publish и нелокализованный collection type `Lead` без Draft & Publish.
 - 20 component schemas: 14 landing, 3 layout, 3 shared.
-- Стандартные core controller/router/service; нет custom policies, lifecycle hooks, jobs, автоматического seed/bootstrap, migrations или tests. Есть только явно запускаемый одноразовый импорт русского fallback-контента через `sibklimatrus/scripts/export-homepage-ru.mjs` и `sibklimat-strapi/scripts/import-homepage-ru.mjs`.
+- Стандартные core controller/router/service; нет custom policies, lifecycle hooks, jobs, автоматического seed/bootstrap или tests. В `database/migrations` есть одноразовая миграция `status` → `lead_status` для исправления конфликта Lead со Strapi 5; русский fallback-контент импортируется только явно запускаемыми скриптами `sibklimatrus/scripts/export-homepage-ru.mjs` и `sibklimat-strapi/scripts/import-homepage-ru.mjs`.
 - `src/index.ts` содержит пустые `register()` и `bootstrap()`.
 - Generated Strapi types отслеживаются Git.
 

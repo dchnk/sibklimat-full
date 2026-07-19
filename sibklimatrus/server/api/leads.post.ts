@@ -42,7 +42,7 @@ interface LeadData {
   consentAt: string
   captchaStatus: CaptchaStatus
   source: 'website'
-  status: 'new'
+  leadStatus: 'new'
 }
 
 const rateLimitBuckets = new Map<string, RateLimitBucket>()
@@ -274,7 +274,7 @@ const createLeadData = (
     consentAt,
     captchaStatus,
     source: 'website',
-    status: 'new'
+    leadStatus: 'new'
   }
 }
 
